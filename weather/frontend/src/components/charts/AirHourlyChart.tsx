@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { AirHourlyPoint } from '@contract';
 import { gradeColor, gradeLabel } from '../../lib/air';
 import { datePart, formatHour, formatMonthDay, relativeDayLabel, weekdayShort } from '../../lib/format';
-import { dayBoundaries } from './HourlyChart';
+import { dayBoundaries, topRoundedBar } from './HourlyChart';
 
 const BAR = 12;
 const GAP = 3;
@@ -49,14 +49,14 @@ export function AirHourlyChart({ hourly, pollutant, today }: { hourly: AirHourly
         onBlur={() => setActive(null)}
       >
         <svg width={width} height={H} viewBox={`0 0 ${width} ${H}`} className="air-chart__svg" onMouseLeave={() => setActive(null)}>
-          <line x1={0} x2={width} y1={base} y2={base} className="hourly__baseline" />
+          <line x1={0} x2={width} y1={base} y2={base} className="chart-baseline" />
           {bounds.map((i) => {
             const d = datePart(hourly[i].time);
             const rel = relativeDayLabel(d, today);
             return (
               <g key={i}>
-                {i > 0 && <line x1={i * step - GAP / 2} x2={i * step - GAP / 2} y1={0} y2={base} className="air-chart__daysep" />}
-                <text x={i * step + 2} y={12} className="air-chart__day">
+                {i > 0 && <line x1={i * step - GAP / 2} x2={i * step - GAP / 2} y1={0} y2={base} className="chart-daysep" />}
+                <text x={i * step + 2} y={12} className="chart-tick is-day">
                   {rel === weekdayShort(d) ? `${rel} ${formatMonthDay(d)}` : rel}
                 </text>
               </g>
@@ -69,9 +69,9 @@ export function AirHourlyChart({ hourly, pollutant, today }: { hourly: AirHourly
             return (
               <g key={p.time} onMouseEnter={() => setActive(i)} className={active === i ? 'is-active' : undefined}>
                 <rect x={i * step} y={TOP} width={BAR + GAP} height={base - TOP} fill="transparent" />
-                <rect data-testid="air-bar" data-grade={g} x={i * step} y={base - bh} width={BAR} height={bh} rx={3} fill={gradeColor(g)} className="air-chart__bar" />
+                <path data-testid="air-bar" data-grade={g} d={topRoundedBar(i * step, base, BAR, bh)} style={{ fill: gradeColor(g) }} className="air-chart__bar" />
                 {i % 6 === 0 && (
-                  <text x={i === 0 ? 0 : i * step + BAR / 2} y={H - 4} textAnchor={i === 0 ? 'start' : 'middle'} className="air-chart__tick">
+                  <text x={i === 0 ? 0 : i * step + BAR / 2} y={H - 4} textAnchor={i === 0 ? 'start' : 'middle'} className="chart-tick">
                     {formatHour(p.time).replace(' ', '')}
                   </text>
                 )}
@@ -80,6 +80,40 @@ export function AirHourlyChart({ hourly, pollutant, today }: { hourly: AirHourly
           })}
         </svg>
       </div>
+    </div>
+  );
+}
+
+/** Table view of the same 72 h series. */
+export function AirHourlyTable({ hourly, today }: { hourly: AirHourlyPoint[]; today: string }) {
+  return (
+    <div className="scroll-x table-wrap" tabIndex={0} role="region" aria-label="Hourly air quality table">
+      <table className="data-table">
+        <thead>
+          <tr>
+            <th scope="col">Time</th>
+            <th scope="col">PM10 µg/m³</th>
+            <th scope="col">PM2.5 µg/m³</th>
+            <th scope="col">O₃ µg/m³</th>
+          </tr>
+        </thead>
+        <tbody>
+          {hourly.map((p) => (
+            <tr key={p.time}>
+              <th scope="row">
+                {relativeDayLabel(datePart(p.time), today)} {formatHour(p.time)}
+              </th>
+              <td>
+                {p.pm10} · {gradeLabel(p.pm10Grade)}
+              </td>
+              <td>
+                {p.pm25} · {gradeLabel(p.pm25Grade)}
+              </td>
+              <td>{p.o3}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

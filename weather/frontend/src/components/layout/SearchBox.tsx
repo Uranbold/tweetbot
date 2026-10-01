@@ -19,7 +19,17 @@ const GROUP_LABEL: Record<Kind, string> = {
   preset: 'Popular',
 };
 
-export function SearchBox({ onSelect, debounceMs = 200 }: { onSelect: (p: Place) => void; debounceMs?: number }) {
+/** Postel's law: "47.92, 106.92" (or "47.92 106.92") resolves directly. */
+export function parseCoords(text: string): Place | null {
+  const m = /^\s*(-?\d{1,2}(?:\.\d+)?)\s*[, ]\s*(-?\d{1,3}(?:\.\d+)?)\s*$/.exec(text);
+  if (!m) return null;
+  const lat = Number(m[1]);
+  const lon = Number(m[2]);
+  if (Math.abs(lat) > 90 || Math.abs(lon) > 180) return null;
+  return { name: `${lat.toFixed(2)}, ${lon.toFixed(2)}`, lat: Math.round(lat * 100) / 100, lon: Math.round(lon * 100) / 100 };
+}
+
+export function SearchBox({ onSelect, debounceMs = 150 }: { onSelect: (p: Place) => void; debounceMs?: number }) {
   const id = useId();
   const listId = `${id}-list`;
   const inputRef = useRef<HTMLInputElement>(null);
@@ -28,12 +38,14 @@ export function SearchBox({ onSelect, debounceMs = 200 }: { onSelect: (p: Place)
   const [active, setActive] = useState(-1);
   const debounced = useDebouncedValue(value, debounceMs);
   const term = debounced.trim();
-  const search = useLocationSearch(term);
-  const { favorites, recents, clearRecents } = useSavedPlaces();
+  const coords = parseCoords(value);
+  const search = useLocationSearch(coords ? '' : term);
+  const { favorites, recents, clearRecents, isFavorite, toggleFavorite } = useSavedPlaces();
 
   const typing = value.trim().length > 0;
   const options: Option[] = useMemo(() => {
     if (typing) {
+      if (coords) return [{ key: 'coords', kind: 'result' as const, place: coords }];
       // While a new term loads, the previous term's results stay visible (placeholderData).
       const results = search.data?.data ?? [];
       return results.map((l) => ({ key: `r-${l.id}`, kind: 'result' as const, place: toPlace(l) }));
@@ -49,10 +61,10 @@ export function SearchBox({ onSelect, debounceMs = 200 }: { onSelect: (p: Place)
       }
     };
     push('favorite', favorites);
-    push('recent', recents);
+    push('recent', recents.slice(0, 5));
     push('preset', PRESETS);
     return out;
-  }, [typing, search.data, favorites, recents]);
+  }, [typing, coords?.lat, coords?.lon, search.data, favorites, recents]);
 
   const choose = (opt: Option | undefined) => {
     if (!opt) return;
@@ -96,7 +108,7 @@ export function SearchBox({ onSelect, debounceMs = 200 }: { onSelect: (p: Place)
     }
   };
 
-  const loading = typing && (value.trim() !== term || search.isFetching);
+  const loading = typing && !coords && (value.trim() !== term || search.isFetching);
   const showList = open && (options.length > 0 || typing);
   const activeId = active >= 0 && options[active] ? `${id}-opt-${active}` : undefined;
 
@@ -170,6 +182,21 @@ export function SearchBox({ onSelect, debounceMs = 200 }: { onSelect: (p: Place)
                   <span className="search__opt-name">{o.place.name}</span>
                   {sub && <span className="search__opt-sub">{sub}</span>}
                 </span>
+                {o.kind === 'result' && (
+                  // Pointer shortcut; keyboard users favourite from the location card's star.
+                  <button
+                    type="button"
+                    tabIndex={-1}
+                    className={`search__star${isFavorite(o.place) ? ' is-on' : ''}`}
+                    aria-label={isFavorite(o.place) ? `Remove ${o.place.name} from favorites` : `Add ${o.place.name} to favorites`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(o.place);
+                    }}
+                  >
+                    <StarIcon size={16} filled={isFavorite(o.place)} />
+                  </button>
+                )}
               </li>
             );
           })}

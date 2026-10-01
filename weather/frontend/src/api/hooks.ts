@@ -1,4 +1,4 @@
-import { QueryClient, useQuery } from '@tanstack/react-query';
+import { QueryClient, keepPreviousData, useQuery } from '@tanstack/react-query';
 import type {
   AiPrediction,
   AirQualityReport,
@@ -46,6 +46,8 @@ export function useWeather(lat: number, lon: number) {
   return useQuery({
     queryKey: queryKeys.weather(lat, lon),
     queryFn: ({ signal }) => apiGet<TodayWeather>('/weather', { lat: c(lat), lon: c(lon) }, signal),
+    // Doherty threshold: keep the previous location on screen while the next one loads.
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -53,6 +55,7 @@ export function useAir(lat: number, lon: number) {
   return useQuery({
     queryKey: queryKeys.air(lat, lon),
     queryFn: ({ signal }) => apiGet<AirQualityReport>('/air', { lat: c(lat), lon: c(lon) }, signal),
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -62,7 +65,7 @@ export function useCompare(lat: number, lon: number, models: readonly ModelId[])
     queryFn: ({ signal }) =>
       apiGet<ForecastComparison>('/compare', { lat: c(lat), lon: c(lon), models: models.join(',') }, signal),
     enabled: models.length > 0,
-    placeholderData: (prev) => prev,
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -103,6 +106,7 @@ export function usePredict(lat: number, lon: number, hours = 72) {
     queryKey: queryKeys.predict(lat, lon, hours),
     queryFn: ({ signal }) => apiGet<AiPrediction>('/predict', { lat: c(lat), lon: c(lon), hours }, signal),
     staleTime: 15 * MINUTE,
+    placeholderData: keepPreviousData,
     retry: (failureCount, error) => {
       if (error instanceof ApiRequestError && (error.code === 'UPSTREAM_UNAVAILABLE' || !error.retryable)) return false;
       return failureCount < 1;

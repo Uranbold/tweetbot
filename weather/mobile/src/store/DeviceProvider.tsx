@@ -30,7 +30,8 @@ export interface DeviceStoreValue {
 
 const DeviceStoreContext = createContext<DeviceStoreValue | null>(null);
 
-export const SYNC_DEBOUNCE_MS = 800;
+/** Autosave debounce (UX §4.9). */
+export const SYNC_DEBOUNCE_MS = 600;
 
 function detectPlatform(): DeviceRegistration['platform'] {
   if (Platform.OS === 'ios') return 'ios';
@@ -89,6 +90,7 @@ export function DeviceProvider({ children, initialStateOverride, disableEffects 
     state.preferences,
     state.appVersion,
     state.lastSynced,
+    state.testSentAt,
   ]);
 
   const syncNow = useCallback(async (): Promise<Device | null> => {

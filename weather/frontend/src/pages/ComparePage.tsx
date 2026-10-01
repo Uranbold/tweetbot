@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import type { ForecastComparison, ModelId } from '@contract';
 import { useCompare } from '../api/hooks';
@@ -8,8 +8,10 @@ import { SkeletonCard } from '../components/common/Skeleton';
 import { ErrorState } from '../components/common/ErrorState';
 import { WeatherIcon } from '../components/icons/WeatherIcon';
 import { MultiLineChart } from '../components/charts/MultiLineChart';
-import { MODELS, modelInfo, parseModels } from '../lib/models';
-import { datePart, formatMonthDay, formatPrecip, formatTemp, relativeDayLabel } from '../lib/format';
+import { ViewToggle } from '../components/common/ViewToggle';
+import { MetaFlags } from '../components/common/MetaFlags';
+import { MODELS, PRIMARY_MODELS, modelInfo, parseModels } from '../lib/models';
+import { datePart, formatHour, formatMonthDay, formatPrecip, formatTemp, relativeDayLabel } from '../lib/format';
 import { placeSubtitle } from '../lib/places';
 
 const AGREEMENT_LABEL = { high: 'High', medium: 'Medium', low: 'Low' } as const;
@@ -19,6 +21,7 @@ export default function ComparePage() {
   const [sp, setSp] = useSearchParams();
   const models = useMemo(() => parseModels(sp.get('models')), [sp]);
   const q = useCompare(place.lat, place.lon, models);
+  const [more, setMore] = useState(() => models.some((m) => !PRIMARY_MODELS.includes(m)));
 
   useEffect(() => {
     document.title = `Compare forecasts · ${q.data?.data.location.name ?? place.name} · Skycast`;
@@ -39,16 +42,19 @@ export default function ComparePage() {
   return (
     <div className="page-compare">
       <section className="card" aria-labelledby="compare-title">
-        <h1 id="compare-title" className="current__place">
-          Compare forecasts
-        </h1>
+        <div className="page-head">
+          <h1 id="compare-title" className="current__place">
+            Compare forecasts
+          </h1>
+          <MetaFlags meta={q.data?.meta} timeZone={q.data?.data.location.timezone} />
+        </div>
         <p className="current__sub">
           {q.data ? `${q.data.data.location.name}${placeSubtitle(q.data.data.location) ? ` · ${placeSubtitle(q.data.data.location)}` : ''}` : place.name} — how
           different weather models see the coming days.
         </p>
         <fieldset className="model-picker">
           <legend className="visually-hidden">Models to compare</legend>
-          {MODELS.map((m) => {
+          {MODELS.filter((m) => more || PRIMARY_MODELS.includes(m.id)).map((m) => {
             const on = models.includes(m.id);
             return (
               <label key={m.id} className={`model-chip${on ? ' is-on' : ''}`} style={{ ['--series' as string]: m.color }}>
@@ -59,6 +65,9 @@ export default function ComparePage() {
               </label>
             );
           })}
+          <button type="button" className="btn btn--quiet" aria-expanded={more} onClick={() => setMore((v) => !v)}>
+            {more ? 'Fewer models' : `More models (${MODELS.length - PRIMARY_MODELS.length})`}
+          </button>
         </fieldset>
       </section>
 
@@ -81,6 +90,7 @@ export default function ComparePage() {
 }
 
 function CompareBody({ data, refreshing }: { data: ForecastComparison; refreshing: boolean }) {
+  const [table, setTable] = useState(false);
   const today = datePart(data.models[0]?.hourly[0]?.time ?? data.consensus[0]?.date ?? '1970-01-01');
   const dates = data.consensus.length ? data.consensus.map((c) => c.date) : (data.models[0]?.daily.map((d) => d.date) ?? []);
   const series = data.models.map((m) => ({
@@ -127,8 +137,8 @@ function CompareBody({ data, refreshing }: { data: ForecastComparison; refreshin
                       <td key={d}>
                         <WeatherIcon condition={day.condition} size={26} />
                         <span className="compare-cell__temps">
-                          <span className="t-max">{formatTemp(day.temperatureMax)}</span>
-                          <span className="t-min">{formatTemp(day.temperatureMin)}</span>
+                          <span className="t-max">{formatTemp(day.temperatureMax, 0, '°C')}</span>
+                          <span className="t-min">{formatTemp(day.temperatureMin, 0, '°C')}</span>
                         </span>
                         <span className={`compare-cell__precip${day.precipitationSum >= 1 ? ' is-wet' : ''}`}>{formatPrecip(day.precipitationSum)} mm</span>
                       </td>
@@ -146,7 +156,7 @@ function CompareBody({ data, refreshing }: { data: ForecastComparison; refreshin
                   </th>
                   {data.consensus.map((c) => (
                     <td key={c.date}>
-                      <span className="t-max">{formatTemp(c.temperatureMaxMean, 1)}</span>
+                      <span className="t-max">{formatTemp(c.temperatureMaxMean, 1, '°C')}</span>
                       <span className="muted small">±{(c.temperatureMaxSpread / 2).toFixed(1)}°</span>
                       <span className={`agree agree--${c.agreement}`} title={`Max temperature spread ${c.temperatureMaxSpread.toFixed(1)}°`}>
                         {AGREEMENT_LABEL[c.agreement]}
@@ -162,7 +172,7 @@ function CompareBody({ data, refreshing }: { data: ForecastComparison; refreshin
         </div>
       </Card>
 
-      <Card title="Hourly temperature by model" className="compare-chart-card">
+      <Card title="Hourly temperature by model" className="compare-chart-card" toolbar={<ViewToggle table={table} onChange={setTable} />}>
         <ul className="legend__list legend__list--series" aria-label="Legend">
           {series.map((s) => (
             <li key={s.id} className="legend__item">
@@ -171,7 +181,36 @@ function CompareBody({ data, refreshing }: { data: ForecastComparison; refreshin
             </li>
           ))}
         </ul>
-        <MultiLineChart series={series} today={today} />
+        {table ? (
+          <div className="scroll-x table-wrap" tabIndex={0} role="region" aria-label="Hourly temperature by model table">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th scope="col">Time</th>
+                  {series.map((s) => (
+                    <th key={s.id} scope="col">
+                      {s.label}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {series[0]?.points.map((p, i) => (
+                  <tr key={p.time}>
+                    <th scope="row">
+                      {relativeDayLabel(datePart(p.time), today)} {formatHour(p.time)}
+                    </th>
+                    {series.map((s) => (
+                      <td key={s.id}>{formatTemp(s.points[i]?.value, 1, '°C')}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <MultiLineChart series={series} today={today} />
+        )}
       </Card>
     </div>
   );

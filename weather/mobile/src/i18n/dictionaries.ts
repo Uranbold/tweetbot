@@ -94,6 +94,27 @@ export interface Dictionary {
   subscribe: string;
   unsubscribe: string;
   warmerThanYesterday: (diff: number) => string;
+  showMore: (total: number) => string;
+  showLess: string;
+  aiEstimate: string;
+  aiUnavailable: string;
+  saved: string;
+  sectionWhat: string;
+  sectionWhen: string;
+  sectionLanguage: string;
+  setupTitle: string;
+  setupProgress: (done: number, total: number) => string;
+  setupPermission: string;
+  setupRegion: string;
+  setupTest: string;
+  notifOn: string;
+  notifOff: string;
+  nearestRegion: string;
+  selectedCount: (n: number) => string;
+  aiRiskAlerts: string;
+  loadedWeather: (place: string) => string;
+  now: string;
+  updatedAt: (time: string) => string;
   alertType: Record<AlertType, string>;
   severity: Record<AlertSeverity, string>;
   grade: Record<AirGrade, string>;
@@ -208,6 +229,27 @@ export const en: Dictionary = {
     diff === 0
       ? 'Same as yesterday'
       : `${Math.abs(diff).toFixed(1)}° ${diff > 0 ? 'warmer' : 'colder'} than yesterday`,
+  showMore: (total) => `Show ${total} days`,
+  showLess: 'Show less',
+  aiEstimate: 'AI estimate',
+  aiUnavailable: 'AI forecast unavailable.',
+  saved: 'Saved',
+  sectionWhat: 'What',
+  sectionWhen: 'When',
+  sectionLanguage: 'Language',
+  setupTitle: 'Set up alerts',
+  setupProgress: (done, total) => `${done} of ${total} set up`,
+  setupPermission: 'Allow notifications',
+  setupRegion: 'Pick a region',
+  setupTest: 'Send a test',
+  notifOn: 'Notifications: On',
+  notifOff: 'Notifications: Off — enable in Settings',
+  nearestRegion: 'Nearest region',
+  selectedCount: (n) => `${n} selected`,
+  aiRiskAlerts: 'AI risk alerts',
+  loadedWeather: (place) => `Loaded weather for ${place}`,
+  now: 'Now',
+  updatedAt: (time) => `Updated ${time}`,
   alertType: alertTypeEn,
   severity: { advisory: 'Advisory', warning: 'Warning' },
   grade: { good: 'Good', moderate: 'Moderate', bad: 'Bad', 'very-bad': 'Very bad' },
@@ -275,6 +317,25 @@ export const mn: Dictionary = {
     diff === 0
       ? 'Өчигдөртэй адил'
       : `Өчигдрөөс ${Math.abs(diff).toFixed(1)}° ${diff > 0 ? 'дулаан' : 'хүйтэн'}`,
+  showMore: (total) => `${total} хоног харах`,
+  showLess: 'Хураах',
+  aiEstimate: 'AI тооцоо',
+  saved: 'Хадгалагдсан',
+  sectionWhat: 'Юу',
+  sectionWhen: 'Хэзээ',
+  sectionLanguage: 'Хэл',
+  setupTitle: 'Сэрэмжлүүлэг тохируулах',
+  setupProgress: (done, total) => `${total}-с ${done} бэлэн`,
+  setupPermission: 'Мэдэгдэл зөвшөөрөх',
+  setupRegion: 'Бүс нутаг сонгох',
+  setupTest: 'Туршилт илгээх',
+  notifOn: 'Мэдэгдэл: Идэвхтэй',
+  notifOff: 'Мэдэгдэл: Унтраалттай — Тохиргоонд идэвхжүүл',
+  nearestRegion: 'Хамгийн ойр бүс',
+  selectedCount: (n) => `${n} сонгосон`,
+  aiRiskAlerts: 'AI эрсдэлийн мэдэгдэл',
+  loadedWeather: (place) => `${place}-н цаг агаар ачаалагдлаа`,
+  now: 'Одоо',
   alertType: {
     'heat-wave': 'Халуун',
     'cold-wave': 'Хүйтэн',
@@ -342,6 +403,25 @@ export const ko: Dictionary = {
   prefLocale: '언어',
   warmerThanYesterday: (diff) =>
     diff === 0 ? '어제와 같음' : `어제보다 ${Math.abs(diff).toFixed(1)}° ${diff > 0 ? '높아요' : '낮아요'}`,
+  showMore: (total) => `${total}일 보기`,
+  showLess: '접기',
+  aiEstimate: 'AI 추정',
+  saved: '저장됨',
+  sectionWhat: '무엇을',
+  sectionWhen: '언제',
+  sectionLanguage: '언어',
+  setupTitle: '알림 설정',
+  setupProgress: (done, total) => `${total}개 중 ${done}개 완료`,
+  setupPermission: '알림 허용',
+  setupRegion: '지역 선택',
+  setupTest: '테스트 보내기',
+  notifOn: '알림: 켜짐',
+  notifOff: '알림: 꺼짐 — 설정에서 허용',
+  nearestRegion: '가장 가까운 지역',
+  selectedCount: (n) => `${n}개 선택`,
+  aiRiskAlerts: 'AI 위험 알림',
+  loadedWeather: (place) => `${place} 날씨를 불러왔습니다`,
+  now: '지금',
   alertType: {
     'heat-wave': '폭염',
     'cold-wave': '한파',

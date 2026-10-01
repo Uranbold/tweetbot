@@ -16,7 +16,10 @@ import type { AirReading, Coords, ForecastDay, ForecastHour, PlaceInfo } from '.
 import { smooth, unit } from './noise.js';
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
-const round = (v: number, step = 0.1) => Math.round(v / step) * step;
+const round = (v: number, step = 0.1) => {
+  const inv = Math.round(1 / step);
+  return Math.round(v * inv) / inv;
+};
 const DAY_MS = 86_400_000;
 
 export function mockPlace(c: Coords, now: Date): PlaceInfo {

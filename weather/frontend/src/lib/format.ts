@@ -92,10 +92,10 @@ export function roundTemp(value: number, decimals = 0): number {
   return Object.is(r, -0) ? 0 : r;
 }
 
-/** "11°", "-3°", or "11.4°" with decimals=1. */
-export function formatTemp(value: number | null | undefined, decimals = 0): string {
+/** "11°", "-3°", or "11.4°" with decimals=1. Tables pass unit "°C" (UX §6). */
+export function formatTemp(value: number | null | undefined, decimals = 0, unit: '°' | '°C' = '°'): string {
   if (value == null || Number.isNaN(value)) return '–';
-  return `${roundTemp(value, decimals).toFixed(decimals)}°`;
+  return `${roundTemp(value, decimals).toFixed(decimals)}${unit}`;
 }
 
 export function formatPercent(value: number | null | undefined): string {

@@ -92,7 +92,7 @@ export function outdoorActivityIndex(i: LifeIndexInput): LifeIndex {
   const airPenalty: Record<AirGrade, number> = { good: 0, moderate: 10, bad: 45, 'very-bad': 75 };
   if (i.airGrade) score -= airPenalty[i.airGrade];
   score -= i.next12hMaxPrecipProbability * 0.5;
-  score -= Math.max(0, Math.abs(i.temperature - 19) - 6) * 4; // comfort band 13–25 °C
+  score -= Math.max(0, Math.abs(i.temperature - 19) - 6) * 3; // comfort band 13–25 °C
   if (i.next12hMeanWind > 10) score -= 15;
   const s = Math.round(clamp(score));
   const level = suitability(s);

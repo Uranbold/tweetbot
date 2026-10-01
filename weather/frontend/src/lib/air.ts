@@ -2,12 +2,18 @@ import type { AirGrade, AirQualityReport } from '@contract';
 
 export const AIR_GRADES: readonly AirGrade[] = ['good', 'moderate', 'bad', 'very-bad'] as const;
 
-/** Naver / AirKorea colours: blue, green, orange, red. */
+/** Naver / AirKorea convention (UX §3.3): blue, green, orange, red — light and dark steps. */
+export const AIR_GRADE_HEX: Record<'light' | 'dark', Record<AirGrade, string>> = {
+  light: { good: '#2a78d6', moderate: '#1a9e4b', bad: '#e0860a', 'very-bad': '#c7322e' },
+  dark: { good: '#4a90e8', moderate: '#3fb760', bad: '#e89a2a', 'very-bad': '#e05a52' },
+};
+
+/** Components reference the theme tokens (defined from AIR_GRADE_HEX in global.css). */
 export const AIR_GRADE_COLORS: Record<AirGrade, string> = {
-  good: '#3a8bff',
-  moderate: '#1eb35a',
-  bad: '#f58a1f',
-  'very-bad': '#e5484d',
+  good: 'var(--grade-good)',
+  moderate: 'var(--grade-moderate)',
+  bad: 'var(--grade-bad)',
+  'very-bad': 'var(--grade-very-bad)',
 };
 
 export const AIR_GRADE_LABELS: Record<AirGrade, string> = {
@@ -25,7 +31,7 @@ export const AIR_GRADE_ADVICE: Record<AirGrade, string> = {
 };
 
 export function gradeColor(grade: AirGrade | null | undefined): string {
-  return grade ? AIR_GRADE_COLORS[grade] : 'var(--text-muted)';
+  return grade ? AIR_GRADE_COLORS[grade] : 'var(--fg-3)';
 }
 
 export function gradeLabel(grade: AirGrade | null | undefined): string {

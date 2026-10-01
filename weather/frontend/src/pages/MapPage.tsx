@@ -11,7 +11,8 @@ import { Segmented } from '../components/common/Segmented';
 import { ErrorState } from '../components/common/ErrorState';
 import { GradeBadge } from '../components/common/GradeBadge';
 import { WeatherIcon } from '../components/icons/WeatherIcon';
-import { AIR_GRADES, AIR_GRADE_COLORS, gradeLabel } from '../lib/air';
+import { GradeFace } from '../components/icons/GradeFace';
+import { AIR_GRADES, gradeLabel } from '../lib/air';
 import { formatTemp } from '../lib/format';
 import { placeSearch, toPlace } from '../lib/places';
 import { REGIONS, REGION_VIEW, isRegion, type RegionId } from '../lib/regions';
@@ -22,7 +23,7 @@ type Layer = 'temp' | 'air';
 function MarkerContent({ c, layer }: { c: CitySnapshot; layer: Layer }) {
   return layer === 'air' ? (
     <div className="map-marker map-marker--air" data-grade={c.pm10Grade ?? 'none'}>
-      <span className="map-marker__dot" style={{ background: c.pm10Grade ? AIR_GRADE_COLORS[c.pm10Grade] : 'transparent' }} />
+      <GradeFace grade={c.pm10Grade} size={18} />
       <span className="map-marker__name">{c.location.name}</span>
     </div>
   ) : (
@@ -143,12 +144,12 @@ export default function MapPage() {
           <ul className="legend__list map-legend" aria-label="Fine dust (PM10) grades">
             {AIR_GRADES.map((g) => (
               <li key={g} className="legend__item">
-                <span className="swatch" style={{ background: AIR_GRADE_COLORS[g] }} aria-hidden="true" />
+                <GradeFace grade={g} size={16} />
                 {gradeLabel(g)}
               </li>
             ))}
             <li className="legend__item">
-              <span className="swatch swatch--empty" aria-hidden="true" />
+              <GradeFace grade={null} size={16} />
               No data
             </li>
           </ul>
@@ -180,11 +181,11 @@ export default function MapPage() {
                     <td>
                       <span className="city-table__now">
                         <WeatherIcon condition={c.condition} size={24} />
-                        {formatTemp(c.temperature)}
+                        {formatTemp(c.temperature, 0, '°C')}
                       </span>
                     </td>
                     <td>
-                      <span className="t-min">{formatTemp(c.temperatureMin)}</span> / <span className="t-max">{formatTemp(c.temperatureMax)}</span>
+                      <span className="t-min">{formatTemp(c.temperatureMin, 0, '°C')}</span> / <span className="t-max">{formatTemp(c.temperatureMax, 0, '°C')}</span>
                     </td>
                     <td>{c.precipitationProbability}%</td>
                     <td>{c.pm10Grade ? <GradeBadge grade={c.pm10Grade} size="sm" /> : <span className="muted">–</span>}</td>

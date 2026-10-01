@@ -12,6 +12,19 @@ export interface LineSeries {
 
 const H = 240;
 const M = { top: 16, right: 16, bottom: 28, left: 34 };
+const LABEL_W = 92;
+
+/** Spreads end-label y positions so they never overlap (min gap px), keeping order. */
+export function spreadLabels(ys: number[], gap: number, lo: number, hi: number): number[] {
+  const order = ys.map((y, i) => ({ y, i })).sort((a, b) => a.y - b.y);
+  for (let k = 1; k < order.length; k++) order[k].y = Math.max(order[k].y, order[k - 1].y + gap);
+  const overflow = order.length ? order[order.length - 1].y - hi : 0;
+  if (overflow > 0) for (const o of order) o.y -= overflow;
+  for (let k = 0; k < order.length; k++) order[k].y = Math.max(order[k].y, lo + k * gap);
+  const out = new Array<number>(ys.length);
+  for (const o of order) out[o.i] = o.y;
+  return out;
+}
 
 function niceTicks(min: number, max: number, count = 5): number[] {
   const span = max - min || 1;
@@ -36,13 +49,15 @@ export function MultiLineChart({ series, today, unit = '°' }: { series: LineSer
   const ticks = niceTicks(Math.min(...values), Math.max(...values));
   const yMin = Math.min(ticks[0], Math.min(...values));
   const yMax = Math.max(ticks[ticks.length - 1], Math.max(...values));
-  const x = linearScale(0, n - 1, M.left, width - M.right);
+  const direct = series.length <= 7 && width >= 360;
+  const right = M.right + (direct ? LABEL_W : 0);
+  const x = linearScale(0, n - 1, M.left, width - right);
   const y = linearScale(yMin, yMax, H - M.bottom, M.top);
 
   const onMove = (e: MouseEvent<SVGSVGElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const px = ((e.clientX - rect.left) / rect.width) * width;
-    const i = Math.round(((px - M.left) / (width - M.left - M.right)) * (n - 1));
+    const i = Math.round(((px - M.left) / (width - M.left - right)) * (n - 1));
     setActive(Math.min(n - 1, Math.max(0, i)));
   };
   const onKey = (e: KeyboardEvent<SVGSVGElement>) => {
@@ -71,8 +86,8 @@ export function MultiLineChart({ series, today, unit = '°' }: { series: LineSer
       >
         {ticks.map((t) => (
           <g key={t}>
-            <line x1={M.left} x2={width - M.right} y1={y(t)} y2={y(t)} className="mlc__grid" />
-            <text x={M.left - 6} y={y(t) + 4} textAnchor="end" className="mlc__tick">
+            <line x1={M.left} x2={width - right} y1={y(t)} y2={y(t)} className="chart-grid" />
+            <text x={M.left - 6} y={y(t) + 4} textAnchor="end" className="chart-tick">
               {t}
               {unit}
             </text>
@@ -84,8 +99,8 @@ export function MultiLineChart({ series, today, unit = '°' }: { series: LineSer
           const rel = relativeDayLabel(datePart(t), today);
           return (
             <g key={t}>
-              {h === 0 && <line x1={x(i)} x2={x(i)} y1={M.top} y2={H - M.bottom} className="mlc__daysep" />}
-              <text x={x(i)} y={H - 8} textAnchor="middle" className={`mlc__tick${h === 0 ? ' is-day' : ''}`}>
+              {h === 0 && <line x1={x(i)} x2={x(i)} y1={M.top} y2={H - M.bottom} className="chart-daysep" />}
+              <text x={x(i)} y={H - 8} textAnchor="middle" className={`chart-tick${h === 0 ? ' is-day' : ''}`}>
                 {h === 0 ? rel : formatHour(t).replace(' ', '')}
               </text>
             </g>
@@ -97,21 +112,35 @@ export function MultiLineChart({ series, today, unit = '°' }: { series: LineSer
             data-testid={`line-${s.id}`}
             points={s.points.map((p, i) => `${x(i).toFixed(1)},${y(p.value).toFixed(1)}`).join(' ')}
             fill="none"
-            stroke={s.color}
+            style={{ stroke: s.color }}
             className="mlc__line"
           />
         ))}
+        {direct &&
+          (() => {
+            const ends = series.map((s) => y(s.points[n - 1].value));
+            const ly = spreadLabels(ends, 13, M.top + 4, H - M.bottom);
+            return series.map((s, k) => (
+              <g key={`lbl-${s.id}`} data-testid={`label-${s.id}`}>
+                <path d={`M${x(n - 1) + 3},${ends[k]} L${x(n - 1) + 10},${ly[k]} H${x(n - 1) + 16}`} style={{ stroke: s.color }} className="mlc__leader" fill="none" />
+                <text x={x(n - 1) + 20} y={ly[k] + 4} className="mlc__endlabel">
+                  {s.label} {roundTemp(s.points[n - 1].value)}
+                  {unit}
+                </text>
+              </g>
+            ));
+          })()}
         {active != null && (
           <g>
-            <line x1={x(active)} x2={x(active)} y1={M.top} y2={H - M.bottom} className="mlc__cross" />
+            <line x1={x(active)} x2={x(active)} y1={M.top} y2={H - M.bottom} className="chart-cross" />
             {series.map((s) => (
-              <circle key={s.id} cx={x(active)} cy={y(s.points[active].value)} r={4} fill={s.color} className="mlc__dot" />
+              <circle key={s.id} cx={x(active)} cy={y(s.points[active].value)} r={4} style={{ fill: s.color }} className="chart-dot" />
             ))}
           </g>
         )}
       </svg>
       {active != null && (
-        <div className="mlc__tip" style={tipOnLeft ? { right: width - tipLeft + 12 } : { left: tipLeft + 12 }} role="status">
+        <div className="chart-tip mlc__tip" style={tipOnLeft ? { right: width - tipLeft + 12 } : { left: tipLeft + 12 }} role="status">
           <strong>
             {relativeDayLabel(datePart(times[active]), today)} {formatHour(times[active])}
           </strong>

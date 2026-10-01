@@ -73,10 +73,12 @@ export async function apiGet<T>(path: string, params?: QueryParams, signal?: Abo
 export function errorMessage(err: unknown): string {
   if (err instanceof ApiRequestError) {
     switch (err.code) {
+      case 'NETWORK':
+        return "Can't reach the forecast service. Check your connection, then retry.";
       case 'UPSTREAM_UNAVAILABLE':
-        return 'The weather provider is temporarily unavailable.';
+        return 'The weather provider is temporarily unavailable. Try again in a minute.';
       case 'RATE_LIMITED':
-        return 'Too many requests — please wait a moment.';
+        return 'Too many requests. Wait a moment, then retry.';
       case 'NOT_FOUND':
         return 'No data found for this location.';
       default:

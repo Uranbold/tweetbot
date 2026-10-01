@@ -37,7 +37,8 @@ export class HttpAiPredictionProvider implements AiPredictionProvider {
     if (!parsed.success) throw new UpstreamError('ai-service', 'parse', 'response is not an ApiResponse<AiPrediction>');
     // Pass the body through untouched; make sure the envelope flags exist.
     const body = json as ApiResponse<AiPrediction>;
-    body.meta = { provider: 'skycast-ai', fetchedAt: new Date().toISOString(), mock: false, ...body.meta, stale: false };
+    const meta = body.meta as Partial<ApiResponse<AiPrediction>['meta']>;
+    body.meta = { provider: meta.provider ?? 'skycast-ai', fetchedAt: meta.fetchedAt ?? new Date().toISOString(), mock: meta.mock ?? false, stale: false };
     return body;
   }
 }

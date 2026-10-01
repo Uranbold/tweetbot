@@ -1,8 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import type { AirGrade } from '@contract';
-import { gradeColor } from '@/lib/colors';
-import { useTheme } from '@/theme';
+import { tint, type, useTheme } from '@/theme';
+import { GradeFace } from './GradeFace';
 
 export interface GradeChipProps {
   /** "PM10" / "PM2.5" */
@@ -14,22 +14,31 @@ export interface GradeChipProps {
   testID?: string;
 }
 
-/** Korean 4-tier colour chip: blue / green / orange / red. */
+/**
+ * Air-grade chip (§4.5): face glyph + "PM2.5 · Bad · 48" on a 12 % tinted ground with `fg` text.
+ * Colour is never the only channel — the glyph and label are mandatory.
+ */
 export function GradeChip({ pollutant, grade, gradeLabel, value, testID }: GradeChipProps) {
   const t = useTheme();
-  const color = gradeColor(grade);
+  const color = t.colors.grade[grade];
   return (
     <View
       testID={testID ?? `grade-chip-${grade}`}
-      accessibilityLabel={`${pollutant} ${gradeLabel}${value !== undefined ? ` ${value}` : ''}`}
-      style={[styles.chip, { backgroundColor: t.colors.cardAlt, borderColor: t.colors.border }]}
+      accessibilityRole="text"
+      accessibilityLabel={`${pollutant} ${gradeLabel}${value !== undefined ? `, ${Math.round(value)} micrograms` : ''}`}
+      style={[styles.chip, { backgroundColor: tint(color, t.dark ? 0.2 : 0.12), borderRadius: t.radius.chip }]}
     >
-      <View testID="grade-dot" style={[styles.dot, { backgroundColor: color }]} />
-      <Text style={[styles.pollutant, { color: t.colors.textMuted }]}>{pollutant}</Text>
-      <Text testID="grade-label" style={[styles.grade, { color }]}>
-        {gradeLabel}
+      <GradeFace grade={grade} color={color} size={16} />
+      <Text style={[type.smallStrong, { color: t.colors.fg }]}>
+        {pollutant} <Text style={{ color: t.colors.fg3 }}>·</Text>{' '}
+        <Text testID="grade-label">{gradeLabel}</Text>
+        {value !== undefined ? (
+          <Text style={[type.num, { color: t.colors.fg2 }]}>
+            {' '}
+            <Text style={{ color: t.colors.fg3 }}>·</Text> {Math.round(value)}
+          </Text>
+        ) : null}
       </Text>
-      {value !== undefined ? <Text style={[styles.value, { color: t.colors.textFaint }]}>{Math.round(value)}</Text> : null}
     </View>
   );
 }
@@ -39,13 +48,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 999,
-    borderWidth: StyleSheet.hairlineWidth,
+    paddingLeft: 8,
+    paddingRight: 12,
+    minHeight: 32,
+    paddingVertical: 5,
   },
-  dot: { width: 8, height: 8, borderRadius: 4 },
-  pollutant: { fontSize: 12, fontWeight: '600' },
-  grade: { fontSize: 13, fontWeight: '800' },
-  value: { fontSize: 11, fontWeight: '500' },
 });

@@ -1,5 +1,6 @@
 import type { AirGrade, AirQualityReport } from '@contract';
 import { AIR_GRADES, AIR_GRADE_COLORS, gradeColor, gradeLabel } from '../../lib/air';
+import { GradeFace } from '../icons/GradeFace';
 
 type Band = AirQualityReport['scale']['pm10'][number];
 
@@ -40,12 +41,12 @@ export function Gauge({ label, value, grade, scale, unit = 'µg/m³', size = 180
   const cy = r + 14;
   const t = gaugePosition(value, scale);
   const [nx, ny] = polar(cx, cy, r, t);
-  const gap = 0.012;
+  const gap = 1 / (Math.PI * r); // 2 px gap between segments (1 px each side)
   return (
     <figure className="gauge" style={{ ['--grade' as string]: gradeColor(grade) }}>
       <svg viewBox={`0 0 ${size} ${cy + 8}`} width="100%" style={{ maxWidth: size }} role="img" aria-label={`${label}: ${value} ${unit}, ${gradeLabel(grade)}`}>
         {AIR_GRADES.map((g, i) => (
-          <path key={g} d={arcPath(cx, cy, r, i / 4 + (i ? gap : 0), (i + 1) / 4 - (i < 3 ? gap : 0))} stroke={AIR_GRADE_COLORS[g]} className="gauge__band" fill="none" />
+          <path key={g} d={arcPath(cx, cy, r, i / 4 + (i ? gap : 0), (i + 1) / 4 - (i < 3 ? gap : 0))} style={{ stroke: AIR_GRADE_COLORS[g] }} className="gauge__band" fill="none" />
         ))}
         <circle cx={nx} cy={ny} r={9} className="gauge__knob" />
         <text x={cx} y={cy - 22} textAnchor="middle" className="gauge__value">
@@ -57,7 +58,10 @@ export function Gauge({ label, value, grade, scale, unit = 'µg/m³', size = 180
       </svg>
       <figcaption>
         <span className="gauge__label">{label}</span>
-        <span className="gauge__grade">{gradeLabel(grade)}</span>
+        <span className="gauge__grade">
+          <GradeFace grade={grade} size={20} />
+          {gradeLabel(grade)}
+        </span>
       </figcaption>
     </figure>
   );

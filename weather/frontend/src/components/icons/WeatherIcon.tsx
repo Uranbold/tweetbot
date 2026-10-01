@@ -2,26 +2,30 @@ import type { ReactElement } from 'react';
 import type { Condition, ConditionKey } from '@contract';
 
 /*
- * Small inline SVG weather icon set (64×64 grid), keyed by ConditionKey with day/night variants.
- * Colours come from CSS custom properties (--icon-*) so the set adapts to the dark theme.
+ * Inline SVG weather icon set (UX §3.7): two-tone line style — `currentColor` outlines, a warm tone
+ * for sun/bolt and a cold tone for rain/snow. 64×64 grid; stroke ≈ 1.75 px at 24 px.
+ * Keyed by ConditionKey with day/night variants. Colours are theme tokens (--icon-*).
  */
 
-const SUN = 'var(--icon-sun)';
-const MOON = 'var(--icon-moon)';
-const CLOUD = 'var(--icon-cloud)';
-const CLOUD_DARK = 'var(--icon-cloud-dark)';
-const RAIN = 'var(--icon-rain)';
-const SNOW = 'var(--icon-snow)';
-const BOLT = 'var(--icon-bolt)';
-const FOG = 'var(--icon-fog)';
+const SW = 4.2; // stroke width in viewBox units
+const SUN = 'var(--icon-warm)';
+const SUN_FILL = 'var(--icon-warm-tint)';
+const MOON = 'currentColor';
+const MOON_FILL = 'var(--icon-moon-tint)';
+const CLOUD = 'var(--icon-cloud-fill)';
+const CLOUD_DARK = 'var(--icon-cloud-fill-2)';
+const RAIN = 'var(--icon-cold)';
+const SNOW = 'var(--icon-cold)';
+const BOLT = 'var(--icon-warm)';
+const FOG = 'currentColor';
 
 const CLOUD_PATH = 'M18 48h28a10 10 0 0 0 1.5-19.9A14 14 0 0 0 20.6 25 11.5 11.5 0 0 0 18 48z';
 
 function Sun({ cx = 32, cy = 32, r = 11 }: { cx?: number; cy?: number; r?: number }) {
   const rays = Array.from({ length: 8 }, (_, i) => {
     const a = (i * Math.PI) / 4;
-    const r1 = r + 4;
-    const r2 = r + 9;
+    const r1 = r + 5;
+    const r2 = r + 9.5;
     return (
       <line
         key={i}
@@ -30,7 +34,7 @@ function Sun({ cx = 32, cy = 32, r = 11 }: { cx?: number; cy?: number; r?: numbe
         x2={cx + Math.cos(a) * r2}
         y2={cy + Math.sin(a) * r2}
         stroke={SUN}
-        strokeWidth={3.2}
+        strokeWidth={SW}
         strokeLinecap="round"
       />
     );
@@ -38,7 +42,7 @@ function Sun({ cx = 32, cy = 32, r = 11 }: { cx?: number; cy?: number; r?: numbe
   return (
     <g>
       {rays}
-      <circle cx={cx} cy={cy} r={r} fill={SUN} />
+      <circle cx={cx} cy={cy} r={r} fill={SUN_FILL} stroke={SUN} strokeWidth={SW} />
     </g>
   );
 }
@@ -49,7 +53,7 @@ function Moon({ cx = 32, cy = 32, r = 14 }: { cx?: number; cy?: number; r?: numb
   const [ax, ay] = pt(-70);
   const [bx, by] = pt(20);
   const d = `M${ax} ${ay}A${r} ${r} 0 1 0 ${bx} ${by}A${(r * 0.82).toFixed(2)} ${(r * 0.82).toFixed(2)} 0 0 1 ${ax} ${ay}z`;
-  return <path d={d} fill={MOON} />;
+  return <path d={d} fill={MOON_FILL} stroke={MOON} strokeWidth={SW} strokeLinejoin="round" />;
 }
 
 function Cloud({ x = 0, y = 0, s = 1, dark = false }: { x?: number; y?: number; s?: number; dark?: boolean }) {
@@ -58,8 +62,8 @@ function Cloud({ x = 0, y = 0, s = 1, dark = false }: { x?: number; y?: number; 
       d={CLOUD_PATH}
       transform={`translate(${x} ${y}) scale(${s})`}
       fill={dark ? CLOUD_DARK : CLOUD}
-      stroke="var(--icon-outline)"
-      strokeWidth={1.5 / s}
+      stroke="currentColor"
+      strokeWidth={SW / s}
       strokeLinejoin="round"
     />
   );
@@ -68,7 +72,7 @@ function Cloud({ x = 0, y = 0, s = 1, dark = false }: { x?: number; y?: number; 
 function Drops({ n, heavy = false }: { n: number; heavy?: boolean }) {
   const xs = n === 2 ? [26, 38] : n === 3 ? [22, 32, 42] : [19, 27, 35, 43];
   return (
-    <g stroke={RAIN} strokeWidth={heavy ? 3.4 : 3} strokeLinecap="round">
+    <g stroke={RAIN} strokeWidth={heavy ? SW + 0.6 : SW} strokeLinecap="round">
       {xs.map((x, i) => (
         <line key={x} x1={x} y1={50 + (i % 2) * 2} x2={x - 3} y2={(heavy ? 60 : 57) + (i % 2) * 2} />
       ))}
@@ -78,7 +82,7 @@ function Drops({ n, heavy = false }: { n: number; heavy?: boolean }) {
 
 function Flake({ x, y, r = 3.4 }: { x: number; y: number; r?: number }) {
   return (
-    <g stroke={SNOW} strokeWidth={2} strokeLinecap="round">
+    <g stroke={SNOW} strokeWidth={SW * 0.7} strokeLinecap="round">
       <line x1={x - r} y1={y} x2={x + r} y2={y} />
       <line x1={x - r / 2} y1={y - r * 0.87} x2={x + r / 2} y2={y + r * 0.87} />
       <line x1={x - r / 2} y1={y + r * 0.87} x2={x + r / 2} y2={y - r * 0.87} />
@@ -87,12 +91,12 @@ function Flake({ x, y, r = 3.4 }: { x: number; y: number; r?: number }) {
 }
 
 function Bolt() {
-  return <path d="M34 44l-7 10h6l-3 9 10-13h-6l4-6z" fill={BOLT} stroke="var(--icon-outline)" strokeWidth={1} strokeLinejoin="round" />;
+  return <path d="M34 44l-7 10h6l-3 9 10-13h-6l4-6z" fill={SUN_FILL} stroke={BOLT} strokeWidth={SW * 0.7} strokeLinejoin="round" />;
 }
 
 function FogLines() {
   return (
-    <g stroke={FOG} strokeWidth={3.2} strokeLinecap="round">
+    <g stroke={FOG} strokeWidth={SW} strokeLinecap="round">
       <line x1={12} y1={30} x2={52} y2={30} />
       <line x1={16} y1={39} x2={48} y2={39} />
       <line x1={10} y1={48} x2={44} y2={48} />
@@ -146,7 +150,7 @@ const BUILDERS: Record<ConditionKey, (isDay: boolean) => ReactElement> = {
   'freezing-rain': () => (
     <>
       <Cloud y={-6} />
-      <g stroke={RAIN} strokeWidth={3} strokeLinecap="round">
+      <g stroke={RAIN} strokeWidth={SW} strokeLinecap="round">
         <line x1={24} y1={50} x2={21} y2={57} />
         <line x1={40} y1={50} x2={37} y2={57} />
       </g>
@@ -171,7 +175,7 @@ const BUILDERS: Record<ConditionKey, (isDay: boolean) => ReactElement> = {
   sleet: () => (
     <>
       <Cloud y={-6} />
-      <g stroke={RAIN} strokeWidth={3} strokeLinecap="round">
+      <g stroke={RAIN} strokeWidth={SW} strokeLinecap="round">
         <line x1={24} y1={50} x2={21} y2={58} />
       </g>
       <Flake x={39} y={54} />
@@ -181,7 +185,7 @@ const BUILDERS: Record<ConditionKey, (isDay: boolean) => ReactElement> = {
     <>
       <Cloud y={-8} dark />
       <Bolt />
-      <g stroke={RAIN} strokeWidth={3} strokeLinecap="round">
+      <g stroke={RAIN} strokeWidth={SW} strokeLinecap="round">
         <line x1={22} y1={48} x2={19} y2={55} />
         <line x1={45} y1={48} x2={42} y2={55} />
       </g>
@@ -218,6 +222,7 @@ export function WeatherIcon({ condition, conditionKey, isDay, size = 40, label, 
       data-condition={key}
       data-day={day ? 'day' : 'night'}
     >
+      {!decorative && <title>{name}</title>}
       {build(day)}
     </svg>
   );

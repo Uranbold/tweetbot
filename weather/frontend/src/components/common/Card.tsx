@@ -8,12 +8,14 @@ interface CardProps {
   hideTitle?: boolean;
   action?: { to: string; label: string };
   headerExtra?: ReactNode;
+  /** Right-aligned header controls (e.g. Table view toggle). */
+  toolbar?: ReactNode;
   className?: string;
   children: ReactNode;
   testId?: string;
 }
 
-export function Card({ title, hideTitle, action, headerExtra, className, children, testId }: CardProps) {
+export function Card({ title, hideTitle, action, headerExtra, toolbar, className, children, testId }: CardProps) {
   const id = useId();
   return (
     <section className={['card', className].filter(Boolean).join(' ')} aria-labelledby={title ? id : undefined} data-testid={testId}>
@@ -23,6 +25,7 @@ export function Card({ title, hideTitle, action, headerExtra, className, childre
             {title}
           </h2>
           {headerExtra}
+          {toolbar && <span className="card__toolbar">{toolbar}</span>}
           {action && (
             <Link className="card__action" to={action.to}>
               {action.label}

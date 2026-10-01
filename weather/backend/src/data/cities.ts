@@ -69,7 +69,7 @@ export const CITIES: readonly City[] = [
   { id: '5128581', name: "New York", admin1: "New York", country: "United States", countryCode: 'US', lat: 40.71427, lon: -74.00597, timezone: 'America/New_York', elevation: 10, population: 8804190 },
   { id: '5368361', name: "Los Angeles", admin1: "California", country: "United States", countryCode: 'US', lat: 34.05223, lon: -118.24368, timezone: 'America/Los_Angeles', elevation: 89, population: 3820914 },
   { id: '1880252', name: "Singapore", country: "Singapore", countryCode: 'SG', lat: 1.28967, lon: 103.85007, timezone: 'Asia/Singapore', elevation: 23, population: 5638700 },
-  { id: '1819729', name: "Hong Kong", country: null, countryCode: 'HK', lat: 22.27832, lon: 114.17469, timezone: 'Asia/Hong_Kong', elevation: 60, population: 7396076 },
+  { id: '1819729', name: "Hong Kong", country: "Hong Kong", countryCode: 'HK', lat: 22.27832, lon: 114.17469, timezone: 'Asia/Hong_Kong', elevation: 60, population: 7396076 },
   { id: '1796236', name: "Shanghai", admin1: "Shanghai Municipality", country: "China", countryCode: 'CN', lat: 31.22222, lon: 121.45806, timezone: 'Asia/Shanghai', elevation: 12, population: 24874500 },
   { id: '1853909', name: "Osaka", admin1: "Osaka", country: "Japan", countryCode: 'JP', lat: 34.69379, lon: 135.50107, timezone: 'Asia/Tokyo', elevation: 4, population: 2753862 },
   { id: '2147714', name: "Sydney", admin1: "New South Wales", country: "Australia", countryCode: 'AU', lat: -33.86785, lon: 151.20732, timezone: 'Australia/Sydney', elevation: 58, population: 5557233 },

@@ -18,7 +18,9 @@
       "bundleIdentifier": "com.skycast.app",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Skycast uses your location to pick the nearest region for weather alerts.",
-        "UIBackgroundModes": ["remote-notification"]
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
       }
     },
     "android": {
@@ -27,13 +29,26 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#03c75a"
       },
-      "permissions": ["POST_NOTIFICATIONS", "ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION", "VIBRATE"],
+      "permissions": [
+        "POST_NOTIFICATIONS",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "VIBRATE"
+      ],
       "intentFilters": [
         {
           "action": "VIEW",
           "autoVerify": false,
-          "data": [{ "scheme": "skycast", "host": "region" }],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "data": [
+            {
+              "scheme": "skycast",
+              "host": "region"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
@@ -61,10 +76,11 @@
         }
       ],
       "expo-splash-screen",
-      "expo-web-browser"
+      "expo-web-browser",
+      "expo-font"
     ],
     "experiments": {
-      "typedRoutes": true
+      "typedRoutes": false
     },
     "extra": {
       "router": {},

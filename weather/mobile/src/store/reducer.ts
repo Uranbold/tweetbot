@@ -44,6 +44,8 @@ export interface DeviceState {
   syncError?: string;
   /** Monotonic counter bumped by every change that needs a server sync. */
   dirtyVersion: number;
+  /** When a test notification was last sent successfully (setup progress, UX §4.9). */
+  testSentAt: string | null;
 }
 
 export const initialState: DeviceState = {
@@ -58,12 +60,13 @@ export const initialState: DeviceState = {
   lastSynced: null,
   syncStatus: 'idle',
   dirtyVersion: 0,
+  testSentAt: null,
 };
 
 /** Subset of state that is persisted to AsyncStorage. */
 export type PersistedState = Pick<
   DeviceState,
-  'deviceId' | 'pushToken' | 'platform' | 'regionIds' | 'followLocation' | 'lastLocation' | 'preferences' | 'appVersion' | 'lastSynced'
+  'deviceId' | 'pushToken' | 'platform' | 'regionIds' | 'followLocation' | 'lastLocation' | 'preferences' | 'appVersion' | 'lastSynced' | 'testSentAt'
 >;
 
 export type Action =
@@ -79,6 +82,7 @@ export type Action =
   | { type: 'SYNC_STARTED' }
   | { type: 'SYNC_SUCCEEDED'; device: Device }
   | { type: 'SYNC_FAILED'; error: string }
+  | { type: 'TEST_SENT'; at: string }
   | { type: 'RESET' };
 
 const dirty = (s: DeviceState): DeviceState => ({ ...s, dirtyVersion: s.dirtyVersion + 1, syncStatus: 'pending' });
@@ -98,6 +102,7 @@ export function reducer(state: DeviceState, action: Action): DeviceState {
         preferences: { ...DEFAULT_PREFERENCES, ...(p.preferences ?? {}) },
         appVersion: p.appVersion ?? state.appVersion,
         lastSynced: p.lastSynced ?? null,
+        testSentAt: p.testSentAt ?? null,
         hydrated: true,
       };
     }
@@ -140,6 +145,8 @@ export function reducer(state: DeviceState, action: Action): DeviceState {
       };
     case 'SYNC_FAILED':
       return { ...state, syncStatus: 'error', syncError: action.error };
+    case 'TEST_SENT':
+      return { ...state, testSentAt: action.at };
     case 'RESET':
       return { ...initialState, hydrated: true, platform: state.platform, appVersion: state.appVersion };
     default:
@@ -172,6 +179,7 @@ export function toPersisted(state: DeviceState): PersistedState {
     preferences: state.preferences,
     appVersion: state.appVersion,
     lastSynced: state.lastSynced,
+    testSentAt: state.testSentAt,
   };
 }
 

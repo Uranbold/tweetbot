@@ -8,12 +8,13 @@ export const LEVEL_LABELS: Record<IndexLevel, string> = {
   'very-high': 'Very high',
 };
 
+/** 5-step single-hue sequential ramp of the accent (UX §3.3); the level word is always printed. */
 export const LEVEL_COLORS: Record<IndexLevel, string> = {
-  'very-low': '#3a8bff',
-  low: '#1eb35a',
-  moderate: '#e8a400',
-  high: '#f58a1f',
-  'very-high': '#e5484d',
+  'very-low': 'var(--level-1)',
+  low: 'var(--level-2)',
+  moderate: 'var(--level-3)',
+  high: 'var(--level-4)',
+  'very-high': 'var(--level-5)',
 };
 
 /** 0..4 position for drawing level meters. */

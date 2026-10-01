@@ -7,7 +7,10 @@ import { SkeletonCard } from '../components/common/Skeleton';
 import { ErrorState } from '../components/common/ErrorState';
 import { GradeBadge } from '../components/common/GradeBadge';
 import { Gauge } from '../components/charts/Gauge';
-import { AirHourlyChart } from '../components/charts/AirHourlyChart';
+import { AirHourlyChart, AirHourlyTable } from '../components/charts/AirHourlyChart';
+import { ViewToggle } from '../components/common/ViewToggle';
+import { MetaFlags } from '../components/common/MetaFlags';
+import { GradeFace } from '../components/icons/GradeFace';
 import { AIR_GRADE_ADVICE, AIR_GRADE_COLORS, gradeLabel } from '../lib/air';
 import { datePart, formatClock, formatMonthDay, relativeDayLabel } from '../lib/format';
 import { placeSubtitle } from '../lib/places';
@@ -23,6 +26,7 @@ export default function AirPage() {
   const { place } = useLocationState();
   const q = useAir(place.lat, place.lon);
   const [pollutant, setPollutant] = useState<'pm10' | 'pm25'>('pm10');
+  const [table, setTable] = useState(false);
 
   useEffect(() => {
     document.title = `Air quality · ${q.data?.data.location.name ?? place.name} · Skycast`;
@@ -36,7 +40,7 @@ export default function AirPage() {
       </div>
     );
   }
-  if (q.isError) return <ErrorState error={q.error} onRetry={() => q.refetch()} title="Could not load air quality" />;
+  if (q.isError && !q.data) return <ErrorState error={q.error} onRetry={() => q.refetch()} title="Could not load air quality" />;
 
   const { location, current, hourly, daily, scale } = q.data.data;
   const today = datePart(current.time);
@@ -54,7 +58,10 @@ export default function AirPage() {
               {sub ? `${sub} · ` : ''}As of {formatClock(current.time)} local
             </p>
           </div>
-          <GradeBadge grade={current.overallGrade} size="lg" />
+          <span className="air-hero__flags">
+            <MetaFlags meta={q.data.meta} timeZone={location.timezone} />
+            <GradeBadge grade={current.overallGrade} size="lg" />
+          </span>
         </header>
         <p className="air-hero__advice">{AIR_GRADE_ADVICE[current.overallGrade]}</p>
         <div className="gauges">
@@ -83,7 +90,12 @@ export default function AirPage() {
       </section>
 
       <div className="layout-air">
-        <Card title="Hourly forecast" className="air-hourly" headerExtra={<span className="card__hint">Next {hourly.length} hours</span>}>
+        <Card
+          title="Hourly forecast"
+          className="air-hourly"
+          headerExtra={<span className="card__hint">Next {hourly.length} h</span>}
+          toolbar={<ViewToggle table={table} onChange={setTable} />}
+        >
           <Segmented
             options={[
               { value: 'pm10', label: 'PM10' },
@@ -93,7 +105,7 @@ export default function AirPage() {
             onChange={setPollutant}
             label="Pollutant"
           />
-          <AirHourlyChart hourly={hourly} pollutant={pollutant} today={today} />
+          {table ? <AirHourlyTable hourly={hourly} today={today} /> : <AirHourlyChart hourly={hourly} pollutant={pollutant} today={today} />}
           <Legend scale={pollutant === 'pm10' ? scale.pm10 : scale.pm25} name={pollutant === 'pm10' ? 'PM10' : 'PM2.5'} />
         </Card>
 
@@ -131,7 +143,7 @@ function Legend({ scale, name }: { scale: { grade: keyof typeof AIR_GRADE_COLORS
       <ul className="legend__list">
         {scale.map((b) => (
           <li key={b.grade} className="legend__item">
-            <span className="swatch" style={{ background: AIR_GRADE_COLORS[b.grade] }} aria-hidden="true" />
+            <GradeFace grade={b.grade} size={16} />
             <span>{gradeLabel(b.grade)}</span>
             <span className="muted">{b.max == null ? `${b.min}+` : `${b.min}–${b.max}`}</span>
           </li>

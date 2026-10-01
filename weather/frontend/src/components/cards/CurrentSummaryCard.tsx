@@ -1,34 +1,43 @@
 import type { ApiMeta, TodayWeather } from '@contract';
 import { WeatherIcon } from '../icons/WeatherIcon';
 import { ArrowIcon, StarIcon } from '../icons/UiIcons';
-import { formatClock, formatInstantClock, formatTemp, formatWindSpeed, windArrowRotation } from '../../lib/format';
-import { gradeColor, gradeLabel } from '../../lib/air';
-import { LEVEL_COLORS, LEVEL_LABELS, uvLevel } from '../../lib/levels';
+import { GradeChip } from '../common/GradeBadge';
+import { MetaFlags } from '../common/MetaFlags';
+import { formatClock, formatInstantClock, formatTemp, formatWindSpeed, roundTemp, windArrowRotation } from '../../lib/format';
+import { LEVEL_LABELS, uvLevel } from '../../lib/levels';
 import { placeSubtitle } from '../../lib/places';
+import { decisionLine } from '../../lib/decision';
+import { useCountUp } from '../../hooks/useCountUp';
 
 interface Props {
   weather: TodayWeather;
   meta?: ApiMeta;
   isFavorite?: boolean;
   onToggleFavorite?: () => void;
+  /** False when a warning banner is the loudest element on the page (Von Restorff). */
+  loud?: boolean;
 }
 
-export function CurrentSummaryCard({ weather, meta, isFavorite = false, onToggleFavorite }: Props) {
+/** UX §4.1 hero card: the answer first (temperature, condition, delta, air, decision). */
+export function CurrentSummaryCard({ weather, meta, isFavorite = false, onToggleFavorite, loud = true }: Props) {
   const { location, current, comparison, today, air } = weather;
   const diff = comparison.temperatureDiff;
   const trend = diff > 0 ? 'warmer' : diff < 0 ? 'colder' : 'same';
   const uv = uvLevel(current.uvIndex);
   const subtitle = placeSubtitle(location);
+  const shown = useCountUp(current.temperature);
+  const decision = decisionLine(weather);
 
   return (
-    <section className="card current" aria-labelledby="current-title" data-testid="current-card">
+    <section className={`card current${loud ? '' : ' current--quiet'}`} aria-labelledby="current-title" data-testid="current-card">
       <header className="current__head">
-        <div>
+        <div className="current__where">
           <h1 id="current-title" className="current__place">
             {location.name}
           </h1>
           {subtitle && <p className="current__sub">{subtitle}</p>}
         </div>
+        <MetaFlags meta={meta} timeZone={location.timezone} />
         {onToggleFavorite && (
           <button
             type="button"
@@ -43,12 +52,21 @@ export function CurrentSummaryCard({ weather, meta, isFavorite = false, onToggle
       </header>
 
       <div className="current__main">
-        <WeatherIcon condition={current.condition} size={88} className="current__icon" />
-        <div>
-          <p className="current__temp" aria-label={`Temperature ${formatTemp(current.temperature, 1)}C`}>
-            {formatTemp(current.temperature, 1)}
-          </p>
+        <p className="current__temp" aria-label={`Temperature ${formatTemp(current.temperature)}`} data-value={roundTemp(current.temperature)}>
+          {roundTemp(shown).toFixed(0)}
+          <span className="current__deg">°</span>
+        </p>
+        <div className="current__cond-wrap">
+          <WeatherIcon condition={current.condition} size={64} className="current__icon" label="" />
           <p className="current__cond">{current.condition.label}</p>
+          <p className="current__range">
+            <span className="t-min" aria-label={`Low ${formatTemp(today.temperatureMin)}`}>
+              ↓{formatTemp(today.temperatureMin)}
+            </span>{' '}
+            <span className="t-max" aria-label={`High ${formatTemp(today.temperatureMax)}`}>
+              ↑{formatTemp(today.temperatureMax)}
+            </span>
+          </p>
         </div>
       </div>
 
@@ -56,12 +74,11 @@ export function CurrentSummaryCard({ weather, meta, isFavorite = false, onToggle
         {trend !== 'same' && <ArrowIcon size={14} rotation={trend === 'warmer' ? 0 : 180} />}
         {comparison.message}
       </p>
-      {today.headline && <p className="current__headline">{today.headline}</p>}
 
       <dl className="current__details">
         <div>
           <dt>Feels like</dt>
-          <dd>{formatTemp(current.feelsLike, 1)}</dd>
+          <dd>{formatTemp(current.feelsLike)}</dd>
         </div>
         <div>
           <dt>Humidity</dt>
@@ -71,40 +88,42 @@ export function CurrentSummaryCard({ weather, meta, isFavorite = false, onToggle
           <dt>Wind</dt>
           <dd className="current__wind">
             <ArrowIcon size={14} rotation={windArrowRotation(current.windDirection)} label={`Wind from ${current.windDirectionLabel}`} />
-            {current.windDirectionLabel} {formatWindSpeed(current.windSpeed)}
+            {formatWindSpeed(current.windSpeed)}
           </dd>
         </div>
         <div>
-          <dt>Low / High</dt>
+          <dt>UV</dt>
           <dd>
-            <span className="t-min">{formatTemp(today.temperatureMin)}</span> / <span className="t-max">{formatTemp(today.temperatureMax)}</span>
+            {Math.round(current.uvIndex)} <span className="current__uvword">{LEVEL_LABELS[uv]}</span>
           </dd>
         </div>
       </dl>
 
       <ul className="chips" aria-label="Today at a glance">
-        <li className="chip" style={{ ['--chip' as string]: gradeColor(air?.pm10Grade) }}>
-          <span className="chip__dot" aria-hidden="true" />
-          Fine dust <strong>{gradeLabel(air?.pm10Grade)}</strong>
+        <li>
+          <GradeChip grade={air?.pm10Grade} name="PM10" value={air?.pm10} />
         </li>
-        <li className="chip" style={{ ['--chip' as string]: gradeColor(air?.pm25Grade) }}>
-          <span className="chip__dot" aria-hidden="true" />
-          Ultra-fine dust <strong>{gradeLabel(air?.pm25Grade)}</strong>
+        <li>
+          <GradeChip grade={air?.pm25Grade} name="PM2.5" value={air?.pm25} />
         </li>
-        <li className="chip" style={{ ['--chip' as string]: LEVEL_COLORS[uv] }}>
-          <span className="chip__dot" aria-hidden="true" />
-          UV <strong>{LEVEL_LABELS[uv]}</strong>
-        </li>
-        <li className="chip chip--plain">
+        <li className="chip">
           Sunrise <strong>{formatClock(today.sunrise)}</strong>
         </li>
-        <li className="chip chip--plain">
+        <li className="chip">
           Sunset <strong>{formatClock(today.sunset)}</strong>
         </li>
       </ul>
+
+      {decision && (
+        <p className="current__decision" data-testid="decision">
+          {decision}
+        </p>
+      )}
+      {today.headline && <p className="current__headline">{today.headline}</p>}
       {meta && (
         <p className="current__updated">
-          Updated {formatInstantClock(meta.fetchedAt, location.timezone)} local time · {location.timezone}
+          Updated {formatInstantClock(meta.fetchedAt, location.timezone)}
+          {meta.stale ? ' · stale' : ''} · {location.timezone}
         </p>
       )}
     </section>

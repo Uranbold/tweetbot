@@ -7,6 +7,7 @@ import { useSavedPlaces } from '../../hooks/useFavorites';
 import { PRESETS, samePlace, toPlace } from '../../lib/places';
 import { SearchBox } from './SearchBox';
 import { LocateIcon, StarIcon } from '../icons/UiIcons';
+import { ThemeToggle } from './ThemeToggle';
 
 const TABS = [
   { to: '/', label: 'Home', end: true },
@@ -62,8 +63,8 @@ export function Header() {
           <Link to={{ pathname: '/', search: locationSearch }} className="brand" aria-label="Skycast home">
             <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true">
               <rect width="32" height="32" rx="9" fill="var(--accent)" />
-              <circle cx="13" cy="13" r="5" fill="#fff" />
-              <path d="M10 24a5 5 0 0 1 1-9.9A6 6 0 0 1 22.6 16 4 4 0 0 1 22 24z" fill="#fff" stroke="var(--accent)" strokeWidth="1.5" />
+              <circle cx="13" cy="13" r="5" fill="var(--accent-ink)" />
+              <path d="M10 24a5 5 0 0 1 1-9.9A6 6 0 0 1 22.6 16 4 4 0 0 1 22 24z" fill="var(--accent-ink)" stroke="var(--accent)" strokeWidth="1.5" />
             </svg>
             <span className="brand__name">Skycast</span>
           </Link>
@@ -79,6 +80,7 @@ export function Header() {
             >
               <LocateIcon size={20} />
             </button>
+            <ThemeToggle />
           </div>
         </div>
         <nav className="tabs" aria-label="Main">

@@ -18,7 +18,9 @@ export const MODELS: ModelMeta[] = [
   { id: 'meteofrance', label: 'Météo-France', agency: 'France', color: 'var(--series-7)' },
 ];
 
-export const DEFAULT_MODELS: ModelId[] = ['ecmwf', 'gfs', 'icon', 'jma', 'kma'];
+/** Hick's law: 3 pre-selected models; the rest sit behind "More models". */
+export const DEFAULT_MODELS: ModelId[] = ['ecmwf', 'gfs', 'icon'];
+export const PRIMARY_MODELS: ModelId[] = ['ecmwf', 'gfs', 'icon'];
 
 const IDS = new Set<string>(MODELS.map((m) => m.id));
 
