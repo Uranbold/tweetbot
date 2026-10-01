@@ -1099,12 +1099,33 @@ ol {
 /* ---------- 6. Home cards ---------- */
 .current__head {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   gap: var(--s-2);
 }
 .current__where {
-  flex: 1;
+  flex: 1 1 180px;
   min-width: 0;
+}
+.current__place {
+  overflow-wrap: anywhere;
+}
+.current__head .star-btn {
+  order: 2;
+  margin-left: auto;
+}
+.current__head .meta-flags {
+  order: 3;
+  flex-basis: 100%;
+}
+@media (min-width: 480px) {
+  .current__head .meta-flags {
+    order: 1;
+    flex-basis: auto;
+  }
+  .current__head .star-btn {
+    margin-left: 0;
+  }
 }
 .current__head .meta-flags {
   margin-top: 4px;

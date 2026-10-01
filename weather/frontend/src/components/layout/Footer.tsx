@@ -8,12 +8,12 @@ export function Footer() {
       <div className="site-footer__inner">
         <div className="site-footer__badges" aria-live="polite">
           {meta.mock && (
-            <span className="badge badge--demo" title="The backend is serving deterministic demo data (upstream unavailable or mock mode).">
+            <span className="flag flag--demo" title="The backend is serving deterministic demo data (upstream unavailable or mock mode).">
               Demo data
             </span>
           )}
           {meta.stale && (
-            <span className="badge badge--stale" title="Upstream failed; showing the last cached data.">
+            <span className="flag flag--stale" title="Upstream failed; showing the last cached data.">
               Stale
             </span>
           )}
