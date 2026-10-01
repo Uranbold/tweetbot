@@ -47,7 +47,7 @@ class PredictedHourly(CamelModel):
     temperature_nwp: float
     temperature_p10: float
     temperature_p90: float
-    precipitation_probability: float = Field(ge=0, le=100)
+    precipitation_probability: int = Field(ge=0, le=100)  # percent, calibrated
     precipitation: float = Field(ge=0)
 
 

@@ -16,6 +16,7 @@ import { WeeklyCard } from '../components/cards/WeeklyCard';
 import { AirSummaryCard } from '../components/cards/AirSummaryCard';
 import { SunCard } from '../components/cards/SunCard';
 import { NationCard } from '../components/cards/NationCard';
+import { AiForecastCard } from '../components/cards/AiForecastCard';
 import { SkeletonCard } from '../components/common/Skeleton';
 import { ErrorState } from '../components/common/ErrorState';
 
@@ -88,6 +89,7 @@ export default function HomePage() {
     ),
     alerts: <AlertsBanner key="alerts" alerts={w.alerts} />,
     hourly: <HourlyCard key="hourly" hourly={w.hourly} today={today} />,
+    ai: <AiForecastCard key="ai" lat={place.lat} lon={place.lon} today={today} />,
     life: <LifeIndicesCard key="life" indices={w.lifeIndices} />,
     clothing: <ClothingCard key="clothing" clothing={w.clothing} min={w.today.temperatureMin} max={w.today.temperatureMax} />,
     weekly: <WeeklyCard key="weekly" daily={w.daily} today={today} />,
@@ -100,9 +102,9 @@ export default function HomePage() {
     <div className={q.isFetching ? 'is-refreshing' : undefined}>
       <TwoColumn
         desktop={desktop}
-        main={[cards.current, cards.alerts, cards.hourly, cards.weekly, cards.nation]}
+        main={[cards.current, cards.alerts, cards.hourly, cards.ai, cards.weekly, cards.nation]}
         side={[cards.air, cards.life, cards.clothing, cards.sun]}
-        mobile={[cards.current, cards.alerts, cards.hourly, cards.life, cards.clothing, cards.weekly, cards.air, cards.sun, cards.nation]}
+        mobile={[cards.current, cards.alerts, cards.hourly, cards.ai, cards.life, cards.clothing, cards.weekly, cards.air, cards.sun, cards.nation]}
       />
     </div>
   );

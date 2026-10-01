@@ -1,5 +1,4 @@
-import { useEffect, useMemo } from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { MapContainer, Marker, TileLayer, Tooltip, useMap } from 'react-leaflet';
 import L from 'leaflet';
@@ -12,30 +11,27 @@ import { Segmented } from '../components/common/Segmented';
 import { ErrorState } from '../components/common/ErrorState';
 import { GradeBadge } from '../components/common/GradeBadge';
 import { WeatherIcon } from '../components/icons/WeatherIcon';
-import { AIR_GRADE_COLORS, gradeLabel } from '../lib/air';
+import { AIR_GRADES, AIR_GRADE_COLORS, gradeLabel } from '../lib/air';
 import { formatTemp } from '../lib/format';
 import { placeSearch, toPlace } from '../lib/places';
 import { REGIONS, REGION_VIEW, isRegion, type RegionId } from '../lib/regions';
 
 type Layer = 'temp' | 'air';
 
-function markerIcon(c: CitySnapshot, layer: Layer): L.DivIcon {
-  const air = layer === 'air';
-  const html = renderToStaticMarkup(
-    air ? (
-      <div className="map-marker map-marker--air" style={{ background: c.pm10Grade ? AIR_GRADE_COLORS[c.pm10Grade] : 'var(--surface-2)' }}>
-        <span className="map-marker__name">{c.location.name}</span>
-        <span className="map-marker__value">{gradeLabel(c.pm10Grade)}</span>
-      </div>
-    ) : (
-      <div className="map-marker">
-        <WeatherIcon condition={c.condition} size={26} label="" />
-        <span className="map-marker__value">{formatTemp(c.temperature)}</span>
-        <span className="map-marker__name">{c.location.name}</span>
-      </div>
-    ),
+/** Marker body as JSX; rendered into a hidden template and copied into Leaflet divIcons. */
+function MarkerContent({ c, layer }: { c: CitySnapshot; layer: Layer }) {
+  return layer === 'air' ? (
+    <div className="map-marker map-marker--air" data-grade={c.pm10Grade ?? 'none'}>
+      <span className="map-marker__dot" style={{ background: c.pm10Grade ? AIR_GRADE_COLORS[c.pm10Grade] : 'transparent' }} />
+      <span className="map-marker__name">{c.location.name}</span>
+    </div>
+  ) : (
+    <div className="map-marker">
+      <WeatherIcon condition={c.condition} size={26} label="" />
+      <span className="map-marker__value">{formatTemp(c.temperature)}</span>
+      <span className="map-marker__name">{c.location.name}</span>
+    </div>
   );
-  return L.divIcon({ html, className: 'map-marker-wrap', iconSize: undefined, iconAnchor: [0, 0] });
 }
 
 function FitToCities({ cities, region }: { cities: CitySnapshot[]; region: RegionId }) {
@@ -46,7 +42,7 @@ function FitToCities({ cities, region }: { cities: CitySnapshot[]; region: Regio
       return;
     }
     const bounds = L.latLngBounds(cities.map((c) => [c.location.lat, c.location.lon] as [number, number]));
-    map.fitBounds(bounds, { padding: [40, 40], maxZoom: 8 });
+    map.fitBounds(bounds, { padding: [36, 48], maxZoom: 8 });
   }, [cities, region, map]);
   return null;
 }
@@ -82,7 +78,16 @@ export default function MapPage() {
     navigate({ pathname: '/', search: placeSearch(p) });
   };
 
-  const icons = useMemo(() => new Map(cities.map((c) => [c.location.id, markerIcon(c, layer)])), [cities, layer]);
+  // Marker HTML is rendered by React into a hidden template, then handed to Leaflet as divIcons.
+  const templateRef = useRef<HTMLDivElement>(null);
+  const [icons, setIcons] = useState<Map<string, L.DivIcon>>(() => new Map());
+  useEffect(() => {
+    const next = new Map<string, L.DivIcon>();
+    templateRef.current?.querySelectorAll<HTMLElement>('[data-city]').forEach((el) => {
+      next.set(el.dataset.city!, L.divIcon({ html: el.innerHTML, className: 'map-marker-wrap', iconSize: undefined, iconAnchor: [0, 0] }));
+    });
+    setIcons(next);
+  }, [cities, layer]);
 
   return (
     <div className="page-map">
@@ -104,10 +109,17 @@ export default function MapPage() {
             />
           </div>
         </header>
+        <div ref={templateRef} hidden>
+          {cities.map((c) => (
+            <div key={c.location.id} data-city={c.location.id}>
+              <MarkerContent c={c} layer={layer} />
+            </div>
+          ))}
+        </div>
         <div className="map-wrap">
-          <MapContainer center={REGION_VIEW[region].center} zoom={REGION_VIEW[region].zoom} scrollWheelZoom className="map" worldCopyJump>
+          <MapContainer center={REGION_VIEW[region].center} zoom={REGION_VIEW[region].zoom} zoomSnap={0.25} scrollWheelZoom className="map" worldCopyJump>
             <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-            {cities.map((c) => (
+            {cities.filter((c) => icons.has(c.location.id)).map((c) => (
               <Marker
                 key={c.location.id}
                 position={[c.location.lat, c.location.lon]}
@@ -127,6 +139,20 @@ export default function MapPage() {
           </MapContainer>
           {q.isPending && <div className="map-overlay" role="status">Loading cities…</div>}
         </div>
+        {layer === 'air' && (
+          <ul className="legend__list map-legend" aria-label="Fine dust (PM10) grades">
+            {AIR_GRADES.map((g) => (
+              <li key={g} className="legend__item">
+                <span className="swatch" style={{ background: AIR_GRADE_COLORS[g] }} aria-hidden="true" />
+                {gradeLabel(g)}
+              </li>
+            ))}
+            <li className="legend__item">
+              <span className="swatch swatch--empty" aria-hidden="true" />
+              No data
+            </li>
+          </ul>
+        )}
         {q.isError && <ErrorState compact error={q.error} onRetry={() => q.refetch()} title="Could not load cities" />}
       </section>
 

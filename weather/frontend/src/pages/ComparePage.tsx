@@ -12,7 +12,7 @@ import { MODELS, modelInfo, parseModels } from '../lib/models';
 import { datePart, formatMonthDay, formatPrecip, formatTemp, relativeDayLabel } from '../lib/format';
 import { placeSubtitle } from '../lib/places';
 
-const AGREEMENT_LABEL = { high: 'High agreement', medium: 'Some spread', low: 'Low agreement' } as const;
+const AGREEMENT_LABEL = { high: 'High', medium: 'Medium', low: 'Low' } as const;
 
 export default function ComparePage() {
   const { place } = useLocationState();
@@ -142,7 +142,7 @@ function CompareBody({ data, refreshing }: { data: ForecastComparison; refreshin
                 <tr>
                   <th scope="row" className="sticky-col">
                     Consensus
-                    <span className="model-name__agency">mean high · spread</span>
+                    <span className="model-name__agency">mean high · spread · agreement</span>
                   </th>
                   {data.consensus.map((c) => (
                     <td key={c.date}>
@@ -150,6 +150,7 @@ function CompareBody({ data, refreshing }: { data: ForecastComparison; refreshin
                       <span className="muted small">±{(c.temperatureMaxSpread / 2).toFixed(1)}°</span>
                       <span className={`agree agree--${c.agreement}`} title={`Max temperature spread ${c.temperatureMaxSpread.toFixed(1)}°`}>
                         {AGREEMENT_LABEL[c.agreement]}
+                        <span className="visually-hidden"> agreement</span>
                       </span>
                       <span className="small muted">{formatPrecip(c.precipitationSumMean)} mm</span>
                     </td>

@@ -1,5 +1,6 @@
 import { QueryClient, useQuery } from '@tanstack/react-query';
 import type {
+  AiPrediction,
   AirQualityReport,
   ForecastComparison,
   Location,
@@ -38,6 +39,7 @@ export const queryKeys = {
   nation: (region: string) => ['nation', region] as const,
   search: (q: string) => ['locations', 'search', q.trim().toLowerCase()] as const,
   reverse: (lat: number, lon: number) => ['locations', 'reverse', c(lat), c(lon)] as const,
+  predict: (lat: number, lon: number, hours: number) => ['predict', c(lat), c(lon), hours] as const,
 };
 
 export function useWeather(lat: number, lon: number) {
@@ -89,5 +91,21 @@ export function fetchReverse(client: QueryClient, lat: number, lon: number) {
     queryKey: queryKeys.reverse(lat, lon),
     queryFn: ({ signal }) => apiGet<Location>('/locations/reverse', { lat: c(lat), lon: c(lon) }, signal),
     staleTime: 60 * MINUTE,
+  });
+}
+
+/**
+ * AI post-processed forecast. Kept separate from /weather so an AI-service outage (503) only
+ * affects its own card; it is retried once, not on 503 storms.
+ */
+export function usePredict(lat: number, lon: number, hours = 72) {
+  return useQuery({
+    queryKey: queryKeys.predict(lat, lon, hours),
+    queryFn: ({ signal }) => apiGet<AiPrediction>('/predict', { lat: c(lat), lon: c(lon), hours }, signal),
+    staleTime: 15 * MINUTE,
+    retry: (failureCount, error) => {
+      if (error instanceof ApiRequestError && (error.code === 'UPSTREAM_UNAVAILABLE' || !error.retryable)) return false;
+      return failureCount < 1;
+    },
   });
 }

@@ -348,5 +348,74 @@ write('nation-mn.json', nation('mn', 'Mongolia', MN));
 write('nation-kr.json', nation('kr', 'South Korea', KR));
 write('nation-world.json', nation('world', 'World', WORLD));
 write('locations.json', { data: catalog, meta: META });
-write('regions.json', { data: [{ id: 'mn', label: 'Mongolia' }, { id: 'kr', label: 'South Korea' }, { id: 'world', label: 'World' }], meta: META });
+// Region[] (notification regions; the UI hardcodes the three /nation groups instead).
+write('regions.json', {
+  data: [...MN, ...KR].map(([l]) => ({
+    id: `${l.countryCode.toLowerCase()}-${l.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z]+/g, '-')}`,
+    name: l.name,
+    country: l.countryCode,
+    lat: l.lat,
+    lon: l.lon,
+  })),
+  meta: META,
+});
+
+// ---------------- predict (AI post-processing) ----------------
+const predHourly = [];
+for (let i = 0; i < 72; i++) {
+  const ms = start + i * 3600e3;
+  const h = new Date(ms).getUTCHours();
+  const dayIdx = Math.floor((14 + i) / 24);
+  const nwp = r1(hourlyTemp(h, dayIdx) + (rand() - 0.5) * 0.6);
+  const corr = r1(nwp - 0.6 - 0.4 * Math.cos(((h - 4) / 24) * 2 * Math.PI)); // NWP runs warm at night in UB
+  const spread = 0.8 + i * 0.035;
+  const rainy = i >= 26 && i <= 33;
+  predHourly.push({
+    time: iso(ms),
+    temperature: corr,
+    temperatureNwp: nwp,
+    temperatureP10: r1(corr - spread),
+    temperatureP90: r1(corr + spread * 0.9),
+    precipitationProbability: rainy ? 45 + Math.round(rand() * 30) : Math.round(rand() * 8),
+    precipitation: rainy ? r1(rand() * 1.6) : 0,
+  });
+}
+const predDaily = [0, 1, 2, 3].map((d) => {
+  const ms = Date.UTC(2026, 9, 1 + d);
+  const day = daily[d];
+  return {
+    date: isoDate(ms),
+    temperatureMin: r1(day.temperatureMin - 0.9),
+    temperatureMax: r1(day.temperatureMax - 0.3),
+    temperatureMinP10: r1(day.temperatureMin - 2.6 - d * 0.4),
+    temperatureMaxP90: r1(day.temperatureMax + 1.4 + d * 0.4),
+    precipitationSum: r1(day.precipitationSum * 0.8),
+    hazardProbabilities: d === 0 ? { 'strong-wind': 0.72, 'fine-dust': 0.31 } : d === 1 ? { 'strong-wind': 0.35, dry: 0.12 } : d === 3 ? { 'cold-wave': 0.28 } : {},
+  };
+});
+write('predict.json', {
+  data: {
+    location: UB,
+    generatedAt: '2026-10-01T06:02:00Z',
+    horizonHours: 72,
+    hourly: predHourly,
+    daily: predDaily,
+    risks: [
+      { hazard: 'strong-wind', severity: 'advisory', probability: 0.72, expectedStart: '2026-10-01T15:00', rationale: '5 of 7 models gust above 10 m/s this afternoon; spread narrow.' },
+      { hazard: 'fine-dust', severity: 'advisory', probability: 0.31, expectedStart: '2026-10-01T21:00', rationale: 'Evening inversion and stove smoke typically push PM2.5 into "bad".' },
+      { hazard: 'cold-wave', severity: 'warning', probability: 0.28, rationale: 'Minimum near -9 °C on Oct 6 in 2 of 7 members.' },
+    ],
+    summary: 'Slightly cooler than raw guidance overnight; breezy this afternoon with a 72% chance of strong-wind advisory conditions. Light rain likely tomorrow afternoon.',
+    model: {
+      name: 'skycast-gbr-v1',
+      version: '1.3.0',
+      algorithm: 'gradient-boosting',
+      trainedAt: '2026-09-28T00:00:00Z',
+      trainingSamples: 18432,
+      metrics: { temperatureMae: 1.2, temperatureMaeNwp: 1.9, precipitationBrier: 0.11 },
+      features: ['NWP temperature', 'hour of day', 'recent residual', 'ensemble spread', 'elevation'],
+    },
+  },
+  meta: { ...META, provider: 'skycast-ai' },
+});
 console.log('fixtures written to', out);

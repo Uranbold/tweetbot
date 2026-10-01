@@ -3,11 +3,13 @@
  * builds. Never imported by production code paths (guarded by the compile-time __USE_FIXTURES__).
  */
 import type {
+  AiPrediction,
   AirQualityReport,
   ApiResponse,
   ForecastComparison,
   Location,
   NationSnapshot,
+  Region,
   TodayWeather,
 } from '@contract';
 import type { QueryParams } from '../api/client';
@@ -20,6 +22,7 @@ import nationKr from './nation-kr.json';
 import nationWorld from './nation-world.json';
 import locationsJson from './locations.json';
 import regionsJson from './regions.json';
+import predictJson from './predict.json';
 
 export const fixtures = {
   weather: weatherJson as ApiResponse<TodayWeather>,
@@ -31,7 +34,8 @@ export const fixtures = {
     world: nationWorld as ApiResponse<NationSnapshot>,
   } as Record<string, ApiResponse<NationSnapshot>>,
   locations: locationsJson as ApiResponse<Location[]>,
-  regions: regionsJson as ApiResponse<{ id: string; label: string }[]>,
+  regions: regionsJson as ApiResponse<Region[]>,
+  predict: predictJson as ApiResponse<AiPrediction>,
 };
 
 const clone = <T>(v: T): T => JSON.parse(JSON.stringify(v)) as T;
@@ -159,6 +163,30 @@ function resolveFixture(path: string, params: QueryParams): ApiResponse<unknown>
       const res = fixtures.nation[region];
       if (!res) throw new ApiRequestError(`Unknown region "${region}"`, 404, 'NOT_FOUND');
       return clone(res);
+    }
+    case '/predict': {
+      const { lat, lon } = coords(params);
+      const res = clone(fixtures.predict);
+      const location = nearestLocation(lat, lon);
+      const s = tempShift(location);
+      const hours = Math.min(72, Math.max(1, Number(params.hours ?? 72) || 72));
+      const d = res.data;
+      d.location = location;
+      d.horizonHours = hours;
+      d.hourly = d.hourly.slice(0, hours);
+      d.hourly.forEach((h) => {
+        h.temperature = shiftT(h.temperature, s);
+        h.temperatureNwp = shiftT(h.temperatureNwp, s);
+        h.temperatureP10 = shiftT(h.temperatureP10, s);
+        h.temperatureP90 = shiftT(h.temperatureP90, s);
+      });
+      d.daily.forEach((x) => {
+        x.temperatureMin = shiftT(x.temperatureMin, s);
+        x.temperatureMax = shiftT(x.temperatureMax, s);
+        x.temperatureMinP10 = shiftT(x.temperatureMinP10, s);
+        x.temperatureMaxP90 = shiftT(x.temperatureMaxP90, s);
+      });
+      return res;
     }
     case '/regions':
       return clone(fixtures.regions);

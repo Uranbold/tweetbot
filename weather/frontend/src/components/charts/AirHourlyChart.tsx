@@ -71,7 +71,7 @@ export function AirHourlyChart({ hourly, pollutant, today }: { hourly: AirHourly
                 <rect x={i * step} y={TOP} width={BAR + GAP} height={base - TOP} fill="transparent" />
                 <rect data-testid="air-bar" data-grade={g} x={i * step} y={base - bh} width={BAR} height={bh} rx={3} fill={gradeColor(g)} className="air-chart__bar" />
                 {i % 6 === 0 && (
-                  <text x={i * step + BAR / 2} y={H - 4} textAnchor="middle" className="air-chart__tick">
+                  <text x={i === 0 ? 0 : i * step + BAR / 2} y={H - 4} textAnchor={i === 0 ? 'start' : 'middle'} className="air-chart__tick">
                     {formatHour(p.time).replace(' ', '')}
                   </text>
                 )}
