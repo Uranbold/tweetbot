@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import logging
 import threading
-import time
-from datetime import datetime, timezone
+from collections.abc import Callable
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -19,11 +19,18 @@ def model_key(lat: float, lon: float) -> str:
 
 
 class ModelStore:
-    def __init__(self, directory: Path, ttl_s: int, mock_ttl_s: int = 3600):
+    def __init__(
+        self,
+        directory: Path,
+        ttl_s: int,
+        mock_ttl_s: int = 3600,
+        clock: Callable[[], datetime] | None = None,
+    ):
         self.directory = Path(directory)
         self.directory.mkdir(parents=True, exist_ok=True)
         self.ttl_s = ttl_s
         self.mock_ttl_s = mock_ttl_s
+        self.clock = clock or (lambda: datetime.now(UTC).replace(tzinfo=None))
         self._mem: dict[str, Any] = {}
         self._lock = threading.Lock()
         self._key_locks: dict[str, threading.Lock] = {}
@@ -37,9 +44,9 @@ class ModelStore:
 
     def _fresh(self, model: Any) -> bool:
         trained_at: datetime = model.trained_at
-        if trained_at.tzinfo is None:
-            trained_at = trained_at.replace(tzinfo=timezone.utc)
-        age = time.time() - trained_at.timestamp()
+        if trained_at.tzinfo is not None:
+            trained_at = trained_at.astimezone(UTC).replace(tzinfo=None)
+        age = (self.clock().replace(tzinfo=None) - trained_at).total_seconds()
         ttl = self.mock_ttl_s if getattr(model, "mock", False) else self.ttl_s
         return age < ttl
 

@@ -53,9 +53,7 @@ def build_summary(
         delta = sum(h.temperature - h.temperature_nwp for h in head) / len(head)
         label = _period_label(now_local)
         if abs(delta) < 0.3:
-            sentences.append(
-                f"AI-adjusted forecast agrees with the raw model {label} (within 0.3°)."
-            )
+            sentences.append(f"AI-adjusted forecast agrees with the raw model {label} (within 0.3°).")
         else:
             word = "warmer" if delta > 0 else "colder"
             sentences.append(
@@ -99,5 +97,8 @@ def build_summary(
             f"({'−' if gain >= 0 else '+'}{abs(gain):.2f} °C)."
         )
     else:
-        sentences.append("Climatology fallback in use: no trained model for this location yet.")
+        sentences.append(
+            "No bias correction applied: the location model is not trained on real observations yet, "
+            "so the raw NWP is shown with a climatological uncertainty band."
+        )
     return " ".join(sentences)

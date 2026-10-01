@@ -30,6 +30,23 @@ HISTORICAL_FORECAST_URL = "https://historical-forecast-api.open-meteo.com/v1/for
 FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
 
 NAME = "open-meteo"
+OBS_MODEL = "era5_seamless"  # ERA5 + ERA5-Land reanalysis (~5 day lag), never an archived forecast
+
+
+def _observations_frame(df: pd.DataFrame) -> pd.DataFrame:
+    """Reduce a normalised archive frame to plain BASE_VARS columns.
+
+    The archive returns ``temperature_2m`` for a single default model, but ``temperature_2m_era5_seamless``
+    when a model is named; both end up here as ``<key>__best_match`` and are mapped by prefix.
+    """
+    out: dict[str, pd.Series] = {}
+    for c in df.columns:
+        key = c.split("__", 1)[0]
+        for var in sorted(BASE_VARS, key=len, reverse=True):
+            if key == var or key.startswith(var + "_"):
+                out.setdefault(var, df[c])
+                break
+    return pd.DataFrame(out, index=df.index)[[v for v in BASE_VARS if v in out]]
 
 
 def _normalise_hourly(payload: dict) -> pd.DataFrame:
@@ -106,7 +123,9 @@ class OpenMeteoDataSource:
                 reason = resp.json().get("reason", "")
             except Exception:
                 pass
-            raise UpstreamError(f"Open-Meteo rejected request (HTTP {resp.status_code}): {reason}", status=resp.status_code)
+            raise UpstreamError(
+                f"Open-Meteo rejected request (HTTP {resp.status_code}): {reason}", status=resp.status_code
+            )
         try:
             payload = resp.json()
         except ValueError as exc:
@@ -116,10 +135,10 @@ class OpenMeteoDataSource:
         self.cache.set(key, payload)
         return payload
 
-    def _get_with_models(self, url: str, params: dict, ttl_s: int) -> dict:
-        """Request multi-model output; if the endpoint rejects ``models``, retry single-model."""
+    def _get_with_models(self, url: str, params: dict, ttl_s: int, models: str | None = None) -> dict:
+        """Request specific model output; if the endpoint rejects ``models``, retry without it."""
         try:
-            return self._get(url, {**params, "models": ",".join(MEMBERS)}, ttl_s)
+            return self._get(url, {**params, "models": models or ",".join(MEMBERS)}, ttl_s)
         except UpstreamError as exc:
             if exc.status is not None and 400 <= exc.status < 500 and exc.status != 429:
                 log.warning("multi-model request rejected (%s); retrying with best_match only", exc)
@@ -138,12 +157,13 @@ class OpenMeteoDataSource:
             "timezone": "auto",
             "wind_speed_unit": "ms",
         }
-        obs_payload = self._get(ARCHIVE_URL, base, self.history_ttl_s)
+        # Ask the archive for a *reanalysis* explicitly. Its default "best_match" serves recent
+        # periods from the archived ECMWF IFS HRES run — the very same series the historical-forecast
+        # API's best_match resolves to — which makes the residual identically zero.
+        obs_payload = self._get_with_models(ARCHIVE_URL, base, self.history_ttl_s, models=OBS_MODEL)
         fc_payload = self._get_with_models(HISTORICAL_FORECAST_URL, base, self.history_ttl_s)
 
-        obs = _normalise_hourly(obs_payload)
-        obs = obs.rename(columns={col(v): v for v in BASE_VARS})
-        obs = obs[[v for v in BASE_VARS if v in obs.columns]]
+        obs = _observations_frame(_normalise_hourly(obs_payload))
         nwp = _normalise_hourly(fc_payload)
         common = obs.index.intersection(nwp.index)
         obs, nwp = obs.loc[common], nwp.loc[common]

@@ -87,10 +87,7 @@ def _normal_cdf(x: np.ndarray) -> np.ndarray:
     sign = np.sign(z)
     az = np.abs(z)
     t = 1.0 / (1.0 + 0.3275911 * az)
-    poly = t * (
-        0.254829592
-        + t * (-0.284496736 + t * (1.421413741 + t * (-1.453152027 + t * 1.061405429)))
-    )
+    poly = t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 + t * (-1.453152027 + t * 1.061405429))))
     erf = sign * (1.0 - poly * np.exp(-az * az))
     return 0.5 * (1.0 + erf)
 
@@ -204,7 +201,9 @@ def _agreement(inp: HazardInput, hazard: str, level: int) -> str | None:
         r3 = c.copy()
         r3[3:] = c[3:] - c[:-3]
         n = int((r3.max(axis=0) >= th["heavy-rain"]["rain_3h"][level]).sum())
-        return f"{n}/{inp.member_precip.shape[1]} models exceed {th['heavy-rain']['rain_3h'][level]:.0f} mm/3 h"
+        return (
+            f"{n}/{inp.member_precip.shape[1]} models exceed {th['heavy-rain']['rain_3h'][level]:.0f} mm/3 h"
+        )
     return None
 
 
@@ -219,9 +218,7 @@ def evaluate_hazards(inp: HazardInput, n_samples: int = 200, seed: int = 2026010
         return HazardResult(daily={}, risks=[], horizon={})
 
     s = sample_scenarios(inp, n_samples, seed)
-    s["feels"] = np.where(
-        s["temp"] >= 24.0, apparent_temperature(s["temp"], s["rh"], s["wind"]), s["temp"]
-    )
+    s["feels"] = np.where(s["temp"] >= 24.0, apparent_temperature(s["temp"], s["rh"], s["wind"]), s["temp"])
     dates, codes = _daily_groups(time)
     n_days = len(dates)
 

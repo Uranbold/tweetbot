@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import FastAPI, Query, Request
 from fastapi.exceptions import RequestValidationError
@@ -77,7 +77,11 @@ def create_app(settings: Settings | None = None, predictor: Predictor | None = N
 
     origins = [o.strip() for o in settings.cors_origins.split(",")] if settings.cors_origins else ["*"]
     app.add_middleware(
-        CORSMiddleware, allow_origins=origins, allow_methods=["*"], allow_headers=["*"], allow_credentials=False
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_methods=["*"],
+        allow_headers=["*"],
+        allow_credentials=False,
     )
 
     @app.middleware("http")
@@ -88,7 +92,11 @@ def create_app(settings: Settings | None = None, predictor: Predictor | None = N
         response.headers["X-Response-Time-Ms"] = f"{ms:.1f}"
         log.info(
             "request method=%s path=%s query=%s status=%d duration_ms=%.1f",
-            request.method, request.url.path, request.url.query, response.status_code, ms,
+            request.method,
+            request.url.path,
+            request.url.query,
+            response.status_code,
+            ms,
         )
         return response
 
@@ -112,7 +120,9 @@ def create_app(settings: Settings | None = None, predictor: Predictor | None = N
 
     @app.exception_handler(StarletteHTTPException)
     async def http_handler(_: Request, exc: StarletteHTTPException):
-        code = "NOT_FOUND" if exc.status_code == 404 else "BAD_REQUEST" if exc.status_code < 500 else "INTERNAL"
+        code = (
+            "NOT_FOUND" if exc.status_code == 404 else "BAD_REQUEST" if exc.status_code < 500 else "INTERNAL"
+        )
         return _error(exc.status_code, code, str(exc.detail))
 
     @app.exception_handler(Exception)
@@ -157,7 +167,7 @@ def create_app(settings: Settings | None = None, predictor: Predictor | None = N
         return {
             "service": "skycast-ai",
             "version": __version__,
-            "time": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "time": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "endpoints": ["/predict", "/model-info", "/train", "/health", "/openapi.json", "/docs"],
         }
 

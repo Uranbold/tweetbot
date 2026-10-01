@@ -7,7 +7,7 @@ import hashlib
 import logging
 import time
 from collections.abc import Callable
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import numpy as np
 import pandas as pd
@@ -39,7 +39,7 @@ ARCHIVE_LAG_DAYS = 6  # the reanalysis archive trails real time by ~5 days
 
 
 def _utcnow() -> datetime:
-    return datetime.now(timezone.utc).replace(tzinfo=None)
+    return datetime.now(UTC).replace(tzinfo=None)
 
 
 def _iso_utc(dt: datetime) -> str:
@@ -60,8 +60,8 @@ class Predictor:
     ):
         self.settings = settings
         self.source = source or build_data_source(settings)
-        self.store = store or ModelStore(settings.model_dir, ttl_s=settings.model_ttl_s)
         self.clock = clock or _utcnow
+        self.store = store or ModelStore(settings.model_dir, ttl_s=settings.model_ttl_s, clock=self.clock)
         self.started_at = time.time()
 
     # ----------------------------------------------------------------- models
@@ -98,8 +98,13 @@ class Predictor:
                 hist, lat, lon, key, now_utc, max_samples=self.settings.max_training_samples
             )
             self.store.put(key, model)
-            log.info("model ready key=%s algorithm=%s samples=%d took=%.2fs",
-                     key, model.algorithm, model.training_samples, time.perf_counter() - t0)
+            log.info(
+                "model ready key=%s algorithm=%s samples=%d took=%.2fs",
+                key,
+                model.algorithm,
+                model.training_samples,
+                time.perf_counter() - t0,
+            )
             return model
 
     def model_info(self, lat: float, lon: float, force: bool = False) -> ModelInfoResponse:
@@ -131,10 +136,26 @@ class Predictor:
         now_utc = self.clock()
         fc: LiveForecast = self.source.fetch_forecast(lat, lon, now_utc, hours)
         model = self.get_model(lat, lon)
+        if getattr(model, "mock", False) and not fc.mock:
+            # A correction learned from synthetic history must never be applied to a real forecast:
+            # pass the NWP through with a climatological band until live history is available.
+            log.warning("model %s is synthetic-trained but forecast is live; passing NWP through", model.key)
+            model = ClimatologyModel.from_observations(
+                model.key,
+                lat,
+                lon,
+                None,
+                model.trained_at,
+                reason="location model trained on synthetic data; NWP passed through uncorrected",
+                data_source="none",
+                mock=True,
+            )
 
         now_local = pd.Timestamp(now_utc + timedelta(seconds=fc.utc_offset_seconds)).floor("h")
         pred_full = model.predict(fc.nwp)
-        window = pred_full.loc[(pred_full.index >= now_local) & (pred_full.index < now_local + pd.Timedelta(hours=hours))]
+        window = pred_full.loc[
+            (pred_full.index >= now_local) & (pred_full.index < now_local + pd.Timedelta(hours=hours))
+        ]
         if window.empty:  # clock skew vs upstream: take whatever is in the future
             window = pred_full.iloc[-hours:]
         nwp_window = fc.nwp.loc[window.index]

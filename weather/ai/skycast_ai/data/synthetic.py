@@ -136,10 +136,7 @@ def _erf(x: np.ndarray) -> np.ndarray:
     sign = np.sign(x)
     ax = np.abs(x)
     t = 1.0 / (1.0 + 0.3275911 * ax)
-    poly = t * (
-        0.254829592
-        + t * (-0.284496736 + t * (1.421413741 + t * (-1.453152027 + t * 1.061405429)))
-    )
+    poly = t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 + t * (-1.453152027 + t * 1.061405429))))
     return sign * (1.0 - poly * np.exp(-ax * ax))
 
 
@@ -195,9 +192,7 @@ def _members(
         out[col("wind_speed_10m", m)] = np.abs(
             truth["wind_speed_10m"].to_numpy() * 1.1 + rng.normal(0, 1.0, n)
         )
-        out[col("surface_pressure", m)] = truth["surface_pressure"].to_numpy() + rng.normal(
-            0, 1.5, n
-        )
+        out[col("surface_pressure", m)] = truth["surface_pressure"].to_numpy() + rng.normal(0, 1.5, n)
         out[col("cloud_cover", m)] = np.clip(cloud + rng.normal(0, 18, n), 0, 100)
         if live:
             if spec.has_precip_prob:

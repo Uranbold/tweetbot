@@ -33,13 +33,17 @@ def test_blend_weights_respected(ub_history):
     only_gfs = blend_temperature(nwp, {"gfs_seamless": 1.0})
     assert np.allclose(only_gfs, nwp[col("temperature_2m", "gfs_seamless")])
     equal = blend_temperature(nwp, {})
-    mean = nwp[[col("temperature_2m", m) for m in ("best_match", "ecmwf_ifs025", "gfs_seamless", "icon_seamless")]].mean(axis=1)
+    mean = nwp[
+        [col("temperature_2m", m) for m in ("best_match", "ecmwf_ifs025", "gfs_seamless", "icon_seamless")]
+    ].mean(axis=1)
     assert np.allclose(equal, mean)
 
 
 def test_single_member_frame_works():
     idx = pd.date_range("2026-01-01", periods=48, freq="h", name="time")
-    nwp = pd.DataFrame({col("temperature_2m"): np.linspace(-10, 5, 48), "lead_hours": np.arange(48)}, index=idx)
+    nwp = pd.DataFrame(
+        {col("temperature_2m"): np.linspace(-10, 5, 48), "lead_hours": np.arange(48)}, index=idx
+    )
     feats = build_features(nwp, {}, 10.0)
     assert feats.shape == (48, len(FEATURE_NAMES))
     assert (feats["ens_spread"] == 0).all()

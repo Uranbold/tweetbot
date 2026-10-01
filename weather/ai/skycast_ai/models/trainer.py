@@ -42,6 +42,7 @@ log = logging.getLogger(__name__)
 
 MIN_SAMPLES = 500
 WET_THRESHOLD_MM = 0.1
+DEGENERATE_RESIDUAL_STD = 0.05  # °C; below this obs ≡ forecast and training is meaningless
 
 
 @dataclass
@@ -125,8 +126,14 @@ def train_location_model(
     except Exception as exc:  # training must never take the API down
         log.exception("training failed for %s; using climatology fallback", key)
         return ClimatologyModel.from_observations(
-            key, lat, lon, hist.obs, now_utc, reason=f"training error: {exc}",
-            data_source=hist.source, mock=hist.mock,
+            key,
+            lat,
+            lon,
+            hist.obs,
+            now_utc,
+            reason=f"training error: {exc}",
+            data_source=hist.source,
+            mock=hist.mock,
         )
 
 
@@ -137,7 +144,14 @@ def _train(
     temp_members = available_members(nwp, "temperature_2m")
     if not temp_members or "temperature_2m" not in obs.columns:
         return ClimatologyModel.from_observations(
-            key, lat, lon, obs, now_utc, reason="no NWP temperature members", data_source=hist.source, mock=hist.mock
+            key,
+            lat,
+            lon,
+            obs,
+            now_utc,
+            reason="no NWP temperature members",
+            data_source=hist.source,
+            mock=hist.mock,
         )
     common = obs.index.intersection(nwp.index)
     obs, nwp = obs.loc[common], nwp.loc[common]
@@ -148,14 +162,36 @@ def _train(
     n = len(obs)
     if n < MIN_SAMPLES:
         return ClimatologyModel.from_observations(
-            key, lat, lon, obs, now_utc, reason=f"only {n} samples (< {MIN_SAMPLES})",
-            data_source=hist.source, mock=hist.mock,
+            key,
+            lat,
+            lon,
+            obs,
+            now_utc,
+            reason=f"only {n} samples (< {MIN_SAMPLES})",
+            data_source=hist.source,
+            mock=hist.mock,
+        )
+
+    y_temp = obs["temperature_2m"].to_numpy()
+    primary_col = col("temperature_2m", PRIMARY_MEMBER)
+    temps_all = member_matrix(nwp, "temperature_2m", temp_members)
+    primary_probe = nwp[primary_col] if primary_col in nwp.columns else temps_all.mean(axis=1)
+    if float(np.nanstd(primary_probe.to_numpy() - y_temp)) < DEGENERATE_RESIDUAL_STD:
+        # observations are (almost) the forecast itself: the archive served the forecast model
+        return ClimatologyModel.from_observations(
+            key,
+            lat,
+            lon,
+            obs,
+            now_utc,
+            reason="observations identical to the NWP series; no residual to learn",
+            data_source=hist.source,
+            mock=hist.mock,
         )
 
     split = int(n * 0.8)
     tr = slice(0, split)
     va = slice(split, n)
-    y_temp = obs["temperature_2m"].to_numpy()
 
     # (d) member weights from training-period MAE
     temps = member_matrix(nwp, "temperature_2m", temp_members)
@@ -195,8 +231,12 @@ def _train(
         fit_idx, cal_idx = slice(0, cal_split), slice(cal_split, split)
         if y_wet[fit_idx].min() != y_wet[fit_idx].max() and y_wet[fit_idx].sum() >= 20:
             precip_clf = HistGradientBoostingClassifier(
-                max_iter=120, learning_rate=0.08, max_leaf_nodes=15, min_samples_leaf=20,
-                l2_regularization=1.0, random_state=0,
+                max_iter=120,
+                learning_rate=0.08,
+                max_leaf_nodes=15,
+                min_samples_leaf=20,
+                l2_regularization=1.0,
+                random_state=0,
             ).fit(x[fit_idx], y_wet[fit_idx])
             raw_cal = precip_clf.predict_proba(x[cal_idx])[:, 1]
             if y_wet[cal_idx].min() != y_wet[cal_idx].max():
@@ -210,7 +250,9 @@ def _train(
 
     primary_col = col("temperature_2m", PRIMARY_MEMBER)
     raw_primary = (
-        nwp[primary_col].fillna(temps.mean(axis=1)).to_numpy() if primary_col in nwp.columns else temps.mean(axis=1).to_numpy()
+        nwp[primary_col].fillna(temps.mean(axis=1)).to_numpy()
+        if primary_col in nwp.columns
+        else temps.mean(axis=1).to_numpy()
     )
     mae_nwp = _mae(raw_primary[va], y_temp[va])
     mae_blend = _mae(blend[va], y_temp[va])
@@ -243,7 +285,13 @@ def _train(
     algorithm = "ensemble-blend" if len(temp_members) > 1 else regressor_kind
     log.info(
         "trained %s: n=%d regressor=%s mae=%.3f nwp=%.3f brier=%s in %.1fs",
-        key, n, regressor_kind, mae_corr, mae_nwp, brier, elapsed,
+        key,
+        n,
+        regressor_kind,
+        mae_corr,
+        mae_nwp,
+        brier,
+        elapsed,
     )
     return TrainedModel(
         key=key,

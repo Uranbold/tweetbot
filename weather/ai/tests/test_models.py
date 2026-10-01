@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import time
-from datetime import date
+from datetime import date, timedelta
 
 import numpy as np
 import pandas as pd
@@ -44,15 +44,19 @@ def test_prediction_quantiles_ordered_and_bounded(ub_model, ub_forecast):
 
 
 def test_store_roundtrip(tmp_path, ub_model):
-    store = ModelStore(tmp_path, ttl_s=3600)
+    clock = lambda: FIXED_NOW  # noqa: E731
+    store = ModelStore(tmp_path, ttl_s=3600, clock=clock)
     store.put("k", ub_model)
-    fresh = ModelStore(tmp_path, ttl_s=3600)  # new process-like instance → loads from disk
+    fresh = ModelStore(tmp_path, ttl_s=3600, clock=clock)  # new process-like instance → loads from disk
     loaded = fresh.get("k")
     assert isinstance(loaded, TrainedModel)
     assert loaded.metrics == ub_model.metrics
-    expired = ModelStore(tmp_path, ttl_s=-1)
+    expired = ModelStore(tmp_path, ttl_s=-1, mock_ttl_s=-1, clock=clock)
     assert expired.get("k") is None
     assert expired.get("k", allow_stale=True) is not None
+    # a synthetic-trained (mock) model uses the shorter mock TTL so live data gets picked up again
+    later = ModelStore(tmp_path, ttl_s=10**6, mock_ttl_s=60, clock=lambda: FIXED_NOW + timedelta(hours=1))
+    assert later.get("k") is None
 
 
 def test_climatology_fallback_on_tiny_data(synthetic):
@@ -76,4 +80,5 @@ def test_training_error_falls_back(ub_history):
     )
     model = train_location_model(broken, *UB, key="broken", now_utc=FIXED_NOW)
     assert isinstance(model, ClimatologyModel)
-    assert np.isnan(model.default_sigma) is False
+    assert model.training_samples == 0 and model.reason
+    assert not np.isnan(model.default_sigma)
