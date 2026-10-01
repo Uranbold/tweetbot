@@ -80,6 +80,14 @@ All data comes from [Open-Meteo](https://open-meteo.com) (CC BY 4.0): forecast, 
 3. Messages are filtered per device (alert types, minimum severity, AI threshold, quiet hours), de-duplicated for 24 h per `(region, kind, hazard, day)`, localised (en / mn / ko) and sent through the Expo Push API (`PUSH_MODE=expo`; `log` in development).
 4. A tap opens the deep link `skycast://region/<id>/alerts`.
 
+## Screenshots (live stack, real Open-Meteo data)
+
+| | |
+|---|---|
+| [Home, desktop, light](docs/screens/home-1280-light.png) | [Home, phone, dark](docs/screens/home-390-dark.png) |
+| [Air quality, desktop](docs/screens/air-1280-light.png) | [Compare forecasts, dark](docs/screens/compare-1280-dark.png) |
+| [Map](docs/screens/map-1280-light.png) (OSM tiles blocked in the build sandbox) | |
+
 ## Documents
 
 Read them in order: [BA.md](docs/BA.md) (why and what) → [SA.md](docs/SA.md) (how) → [UX.md](docs/UX.md) (how it looks and behaves) → [`shared/contract.ts`](shared/contract.ts) (the exact API).
