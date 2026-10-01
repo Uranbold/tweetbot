@@ -14,6 +14,9 @@ import type {
   TodayWeather,
   WeatherAlert,
 } from '@contract';
+// Fixtures are small typed modules; importing them statically keeps the client usable under jest
+// (no dynamic import) and lets EXPO_PUBLIC_USE_FIXTURES=1 builds run with no backend.
+import { handleFixtureRequest } from '@/__fixtures__/handler';
 
 export const DEFAULT_BASE_URL = 'http://localhost:8787/api/v1';
 
@@ -108,8 +111,6 @@ export function createClient(options: ClientOptions = {}): ApiClient {
     });
 
   async function requestFixture<T>(method: string, path: string, body?: unknown): Promise<Result<T>> {
-    // Lazy import keeps fixtures out of the hot path when not in fixture mode.
-    const { handleFixtureRequest } = await import('@/__fixtures__/handler');
     const res = handleFixtureRequest(method, path, body);
     if (res.status === 204 || res.body === null) {
       return { data: undefined as T, meta: { provider: 'fixture', fetchedAt: '', stale: false, mock: true } };

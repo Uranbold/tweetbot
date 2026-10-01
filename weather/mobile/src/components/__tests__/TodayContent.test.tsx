@@ -11,7 +11,7 @@ describe('TodayContent (Today screen body)', () => {
     await renderToday();
     expect(screen.getByTestId('hero-temp')).toHaveTextContent('12°');
     expect(screen.getByText('Partly cloudy')).toBeTruthy();
-    expect(screen.getByTestId('yesterday-diff')).toHaveTextContent('2.3° warmer than yesterday');
+    expect(screen.getByTestId('yesterday-diff')).toHaveTextContent(/↑ 2\.3° warmer than yesterday/);
     expect(screen.getByText('Partly cloudy, rain likely after 6 PM')).toBeTruthy();
   });
 

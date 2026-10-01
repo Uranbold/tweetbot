@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Platform, useColorScheme } from 'react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Manrope_400Regular, Manrope_500Medium, Manrope_600SemiBold, Manrope_800ExtraBold, useFonts } from '@expo-google-fonts/manrope';
@@ -28,7 +28,11 @@ export default function RootLayout() {
   const scheme = useColorScheme();
   const theme = scheme === 'dark' ? darkTheme : lightTheme;
   const [fontsLoaded, fontError] = useFonts({ Manrope_400Regular, Manrope_500Medium, Manrope_600SemiBold, Manrope_800ExtraBold });
-  const ready = fontsLoaded || !!fontError || Platform.OS === 'web';
+  // On web the static export is rendered without the viewer's colour scheme or storage; rendering the
+  // tree only after mount avoids hydrating a light-theme DOM into a dark-theme client.
+  const [mounted, setMounted] = useState(Platform.OS !== 'web');
+  useEffect(() => setMounted(true), []);
+  const ready = (fontsLoaded || !!fontError || Platform.OS === 'web') && mounted;
 
   useEffect(() => {
     if (ready) void SplashScreen.hideAsync().catch(() => undefined);

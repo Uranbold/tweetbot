@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import type { ApiMeta, TodayWeather } from '@contract';
 import type { Dictionary, Locale } from '@/i18n';
 import { announce, useCountUp, useReducedMotion } from '@/hooks/useMotion';
-import { formatClock, roundTemp, signedTemp } from '@/lib/format';
+import { formatClock, formatPeriod, roundTemp, signedTemp } from '@/lib/format';
 import { tint, type, useTheme } from '@/theme';
 import { AlertBanner } from '../AlertBanner';
 import { DailyList } from '../DailyList';
@@ -50,7 +50,7 @@ export function TodayContent({ weather, meta, t, locale, placeLabel }: TodayCont
           severityLabel={t.severity[a.severity]}
           title={a.title}
           description={a.description}
-          period={`${formatClock(a.start)}${a.end ? ` – ${a.end.slice(5, 10).replace('-', '/')} ${formatClock(a.end)}` : ''}`}
+          period={formatPeriod(a.start, a.end)}
         />
       ))}
       {moreAlerts > 0 ? <Text style={[type.label, { color: theme.colors.fg2, marginBottom: 8 }]}>+{moreAlerts} more</Text> : null}
@@ -78,7 +78,7 @@ export function TodayContent({ weather, meta, t, locale, placeLabel }: TodayCont
         <View style={styles.kvRow}>
           <KeyValue label={t.feelsLike} value={roundTemp(weather.current.feelsLike)} />
           <KeyValue label={t.humidity} value={`${Math.round(weather.current.humidity)}%`} />
-          <KeyValue label={t.wind} value={`${weather.current.windDirectionLabel} ${weather.current.windSpeed.toFixed(1)} m/s`} />
+          <KeyValue label={`${t.wind} ${weather.current.windDirectionLabel}`} value={`${weather.current.windSpeed.toFixed(1)} m/s`} />
           <KeyValue label={t.uv} value={`${Math.round(weather.current.uvIndex)}`} />
         </View>
         <View style={styles.chipRow}>

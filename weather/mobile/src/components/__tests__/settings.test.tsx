@@ -18,7 +18,8 @@ describe('RegionPicker', () => {
     const onToggle = jest.fn();
     await render(<RegionPicker regions={regionsFixture} selectedIds={['kr-seoul']} onToggle={onToggle} searchPlaceholder="Search" selectedLabel={en.selectedCount(1)} />);
     expect(screen.getByTestId('selected-count')).toHaveTextContent('1 selected');
-    expect(screen.getByTestId('region-kr-seoul')).toHaveAccessibilityState({ checked: true });
+    expect(screen.getByTestId('region-kr-seoul')).toBeChecked();
+    expect(screen.getByTestId('region-mn-khovd')).not.toBeChecked();
     await fireEvent.press(screen.getByTestId('region-mn-khovd'));
     expect(onToggle).toHaveBeenCalledWith('mn-khovd');
     await fireEvent.changeText(screen.getByTestId('region-search'), 'khov');

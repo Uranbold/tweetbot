@@ -83,6 +83,16 @@ export function formatShortDate(dateIso: string): string {
   return `${wc.month}/${wc.day}`;
 }
 
+/**
+ * Alert window: "10/04 00:00 – 12:00" (same day) or "10/04 00:00 – 10/05 12:00"; open-ended → "from 10/01 12:00".
+ */
+export function formatPeriod(start: string, end?: string, fromLabel = 'from'): string {
+  const s = `${formatShortDate(start)} ${formatClock(start)}`;
+  if (!end) return `${fromLabel} ${s}`;
+  const sameDay = start.slice(0, 10) === end.slice(0, 10);
+  return `${s} – ${sameDay ? '' : `${formatShortDate(end)} `}${formatClock(end)}`;
+}
+
 /** Relative time for notification history ("3m ago"), using the device clock (sentAt is UTC). */
 export function formatRelative(utcIso: string, now: number = Date.now()): string {
   const t = Date.parse(utcIso);

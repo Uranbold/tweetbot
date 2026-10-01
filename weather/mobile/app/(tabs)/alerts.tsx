@@ -10,7 +10,7 @@ import { RiskCard } from '@/components/RiskCard';
 import { Screen, ScreenHeader } from '@/components/Screen';
 import { Button, Card, Chip, Divider, EmptyState, SectionTitle, Skeleton } from '@/components/ui';
 import { useT, type Dictionary } from '@/i18n';
-import { formatClock, formatRelative } from '@/lib/format';
+import { formatPeriod, formatRelative } from '@/lib/format';
 import { useNotifications } from '@/notifications/NotificationsProvider';
 import { useDeviceStore } from '@/store/DeviceProvider';
 import { type, useTheme } from '@/theme';
@@ -119,7 +119,7 @@ export function RegionAlertsCard({ region, t, onOpen }: { region: Region; t: Dic
                 severityLabel={t.severity[a.severity]}
                 title={a.title}
                 description={a.description}
-                period={`${a.start.slice(5, 10).replace('-', '/')} ${formatClock(a.start)}${a.end ? ` – ${formatClock(a.end)}` : ''}`}
+                period={formatPeriod(a.start, a.end)}
               />
             ))
           )}

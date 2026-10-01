@@ -6,12 +6,12 @@ import { useRegionAlerts, useRegions, useWeather } from '@/api/hooks';
 import { AlertBanner } from '@/components/AlertBanner';
 import { GradeChip } from '@/components/GradeChip';
 import { RiskCard } from '@/components/RiskCard';
-import { Screen, ScreenHeader } from '@/components/Screen';
+import { Screen } from '@/components/Screen';
 import { TodayContent } from '@/components/today/TodayContent';
 import { Segmented } from '@/components/settings/controls';
 import { Button, Card, EmptyState, ErrorState, SectionTitle, Skeleton } from '@/components/ui';
 import { useLocale, useT } from '@/i18n';
-import { formatClock } from '@/lib/format';
+import { formatPeriod } from '@/lib/format';
 import { useDeviceStore } from '@/store/DeviceProvider';
 import { type, useTheme } from '@/theme';
 
@@ -63,13 +63,15 @@ export default function RegionDetailScreen() {
 
   return (
     <Screen testID="region-screen">
-      <Stack.Screen options={{ title: region.name }} />
-      <ScreenHeader
-        eyebrow={region.country}
-        title={region.name}
-        right={<Button label={subscribed ? t.unsubscribe : t.subscribe} compact variant={subscribed ? 'secondary' : 'primary'} onPress={() => toggleRegion(region.id)} testID="subscribe-toggle" />}
+      <Stack.Screen
+        options={{
+          title: region.name,
+          headerRight: () => (
+            <Button label={subscribed ? t.unsubscribe : t.subscribe} compact variant={subscribed ? 'secondary' : 'primary'} onPress={() => toggleRegion(region.id)} testID="subscribe-toggle" />
+          ),
+        }}
       />
-      <View style={{ marginBottom: 12 }}>
+      <View style={{ marginTop: 8, marginBottom: 12 }}>
         <Segmented<Tab> options={[{ value: 'weather', label: t.viewWeather }, { value: 'alerts', label: t.viewAlerts }]} value={tab} onChange={setTab} testID="region-tab" />
       </View>
 
@@ -84,7 +86,7 @@ export default function RegionDetailScreen() {
             <>
               {alerts.data.data.alerts.length === 0 ? <Text style={[type.small, { color: theme.colors.fg2 }]}>{t.noAlerts}</Text> : null}
               {alerts.data.data.alerts.map((a) => (
-                <AlertBanner key={`${a.type}-${a.start}`} severity={a.severity} severityLabel={t.severity[a.severity]} title={a.title} description={a.description} period={`${a.start.slice(5, 10).replace('-', '/')} ${formatClock(a.start)}${a.end ? ` – ${formatClock(a.end)}` : ''}`} />
+                <AlertBanner key={`${a.type}-${a.start}`} severity={a.severity} severityLabel={t.severity[a.severity]} title={a.title} description={a.description} period={formatPeriod(a.start, a.end)} />
               ))}
               {alerts.data.data.risks.length > 0 ? (
                 <>
