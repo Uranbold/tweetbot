@@ -292,6 +292,169 @@ export interface NationSnapshot {
   cities: CitySnapshot[];
 }
 
+// ---------- /predict (AI prediction module) ----------
+
+/**
+ * Output of the ML service (weather/ai). The backend proxies it at GET /api/v1/predict.
+ * The model does NOT replace the NWP forecast; it post-processes it:
+ *   1. bias-corrects temperature per location/hour using recent observation residuals,
+ *   2. blends the multi-model ensemble with learned weights,
+ *   3. estimates the probability of hazard thresholds (BR-02) being crossed,
+ *   4. returns calibrated uncertainty bands.
+ */
+export type HazardKey = AlertType;
+
+export interface PredictedHourly {
+  time: string;
+  /** AI-adjusted temperature. */
+  temperature: number;
+  /** Raw NWP input the model started from (for the UI delta). */
+  temperatureNwp: number;
+  /** 10th / 90th percentile band. */
+  temperatureP10: number;
+  temperatureP90: number;
+  precipitationProbability: number; // %, calibrated
+  precipitation: number; // mm
+}
+
+export interface PredictedDaily {
+  date: string;
+  temperatureMin: number;
+  temperatureMax: number;
+  temperatureMinP10: number;
+  temperatureMaxP90: number;
+  precipitationSum: number;
+  /** Probability (0–1) that each hazard threshold is crossed on this day. */
+  hazardProbabilities: Partial<Record<HazardKey, number>>;
+}
+
+export interface HazardRisk {
+  hazard: HazardKey;
+  severity: AlertSeverity;
+  /** 0–1 probability within the horizon. */
+  probability: number;
+  /** First date/time the risk exceeds 0.5, if any. */
+  expectedStart?: string;
+  /** Short explanation, e.g. "Ensemble spread narrow; 6/7 models below -15 °C Thursday morning". */
+  rationale: string;
+}
+
+export interface ModelInfo {
+  name: string; // "skycast-gbr-v1"
+  version: string;
+  /** "gradient-boosting" | "ridge" | "ensemble-blend" | "climatology-fallback" */
+  algorithm: string;
+  trainedAt: string;
+  /** Sample count used to fit this location's model (0 → climatology fallback). */
+  trainingSamples: number;
+  /** Validation metrics, °C MAE for temperature, Brier score for precipitation. */
+  metrics: { temperatureMae?: number; temperatureMaeNwp?: number; precipitationBrier?: number };
+  /** Short list of features the model used, for the explainability card. */
+  features: string[];
+}
+
+export interface AiPrediction {
+  location: Location;
+  generatedAt: string;
+  horizonHours: number; // 72
+  hourly: PredictedHourly[];
+  daily: PredictedDaily[];
+  /** Hazards with probability >= 0.2, highest first. */
+  risks: HazardRisk[];
+  /** Plain-language summary generated from the numbers (template-based, deterministic). */
+  summary: string;
+  model: ModelInfo;
+}
+
+// ---------- Notifications (mobile push, region-based) ----------
+
+export type Platform = 'ios' | 'android' | 'web';
+
+/** A region a user can subscribe to. Backed by data/regions (aimag / province / city). */
+export interface Region {
+  id: string; // "mn-ulaanbaatar", "kr-seoul"
+  name: string;
+  country: string; // "MN"
+  /** Representative point used for evaluating hazards. */
+  lat: number;
+  lon: number;
+  /** Optional bounding box for geofencing the device's location. */
+  bbox?: { minLat: number; minLon: number; maxLat: number; maxLon: number };
+}
+
+export interface NotificationPreferences {
+  /** Which alert types the user wants. Default: all. */
+  alertTypes: AlertType[];
+  /** Minimum severity to notify. Default 'advisory'. */
+  minSeverity: AlertSeverity;
+  /** Also notify when AI risk probability exceeds this (0–1). Default 0.6. 0 disables. */
+  aiRiskThreshold: number;
+  /** Daily briefing hour (0–23, local to region) or null to disable. */
+  dailyBriefingHour: number | null;
+  /** Air-quality grade at or above which to notify. Default 'bad'. */
+  airGradeThreshold: AirGrade | null;
+  /** Quiet hours in region local time, e.g. { start: 22, end: 7 }. */
+  quietHours: { start: number; end: number } | null;
+  locale: 'en' | 'mn' | 'ko';
+}
+
+export interface DeviceRegistration {
+  /** Expo push token ("ExponentPushToken[...]") or FCM/APNs token. */
+  pushToken: string;
+  platform: Platform;
+  /** Region ids the device subscribes to. */
+  regionIds: string[];
+  /** Last known device position, used to auto-pick the nearest region when `followLocation` is true. */
+  lastLocation?: { lat: number; lon: number };
+  followLocation: boolean;
+  preferences: NotificationPreferences;
+  appVersion?: string;
+}
+
+export interface Device extends DeviceRegistration {
+  id: string; // server-assigned
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type NotificationKind = 'alert' | 'ai-risk' | 'air-quality' | 'daily-briefing' | 'test';
+
+export interface NotificationMessage {
+  id: string;
+  kind: NotificationKind;
+  regionId: string;
+  title: string;
+  body: string;
+  /** Deep link the app opens, e.g. "skycast://region/mn-ulaanbaatar/alerts". */
+  deepLink: string;
+  severity?: AlertSeverity;
+  /** Dedup key: one notification per (region, kind, hazard, day). */
+  dedupKey: string;
+  sentAt: string;
+  data: Record<string, string>;
+}
+
+export interface NotificationHistoryEntry extends NotificationMessage {
+  deliveredTo: number;
+}
+
+/**
+ * Notification endpoints
+ *
+ * GET    /api/v1/regions                       -> ApiResponse<Region[]>  (replaces the earlier {id,label}[] shape)
+ * POST   /api/v1/devices                        body DeviceRegistration -> ApiResponse<Device>  (upsert by pushToken)
+ * GET    /api/v1/devices/:id                    -> ApiResponse<Device>
+ * PATCH  /api/v1/devices/:id                    body Partial<DeviceRegistration> -> ApiResponse<Device>
+ * DELETE /api/v1/devices/:id                    -> 204
+ * GET    /api/v1/devices/:id/notifications      -> ApiResponse<NotificationHistoryEntry[]>  (last 50)
+ * POST   /api/v1/devices/:id/test-notification  -> ApiResponse<NotificationMessage>
+ * GET    /api/v1/regions/:id/alerts             -> ApiResponse<{ alerts: WeatherAlert[]; risks: HazardRisk[]; air: AirQualitySnapshot | null }>
+ *
+ * Dispatcher (backend job, every 10 min): for every region with ≥1 device → evaluate alerts (BR-02),
+ * AI risks (/predict), air grade → build NotificationMessage per threshold crossed → dedup by dedupKey
+ * (24 h) → respect quietHours & preferences → send via Expo Push API in chunks of 100 → store history.
+ */
+
 // ---------- Endpoint map ----------
 
 /**
@@ -302,7 +465,9 @@ export interface NationSnapshot {
  * GET /api/v1/air?lat=&lon=                       -> ApiResponse<AirQualityReport>
  * GET /api/v1/compare?lat=&lon=&models=ecmwf,gfs  -> ApiResponse<ForecastComparison>
  * GET /api/v1/nation?region=mn|kr|world           -> ApiResponse<NationSnapshot>
- * GET /api/v1/regions                             -> ApiResponse<{ id: string; label: string }[]>
+ * GET /api/v1/regions                             -> ApiResponse<Region[]>
+ * GET /api/v1/predict?lat=&lon=&hours=72           -> ApiResponse<AiPrediction>   (proxies the AI service, AI_SERVICE_URL)
+ * + notification endpoints listed above.
  *
  * Validation: lat ∈ [-90, 90], lon ∈ [-180, 180], q length 1..100 → else 400 BAD_REQUEST.
  * Caching headers: `Cache-Control: public, max-age=<ttl>` and `X-Cache: HIT|MISS|STALE`.

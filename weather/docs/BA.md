@@ -97,6 +97,9 @@ Research method: inspected the live page structure of `https://weather.naver.com
 | G4 | Reliability | API availability, with mock/stale fallback counted as degraded rather than down | ≥ 99.5 % |
 | G5 | Cost efficiency | Upstream calls per 1,000 page views (cache effectiveness) | ≤ 150 |
 | G6 | Retention | Users with ≥ 1 favourite | ≥ 25 % of returning users |
+| G7 | Forecast skill | AI temperature MAE vs raw NWP (24 h lead, validation) | ≥ 15 % lower |
+| G8 | Notification value | Push opt-in rate / opt-out within 30 days | ≥ 60 % / ≤ 10 % |
+| G9 | Alert timeliness | Time from threshold crossing in forecast to push delivered | ≤ 10 min p95 |
 
 ---
 
@@ -135,12 +138,14 @@ Research method: inspected the live page structure of `https://weather.naver.com
 * Map: city markers by region (Mongolia / Korea / World); temperature and air layers
 * Light/dark theme, responsive layout from 320 px to desktop, WCAG 2.1 AA
 * Degraded mode: deterministic demo data when the upstream fails, clearly labelled
+* **AI prediction module**: bias-corrected 72 h forecast with uncertainty bands and hazard probabilities (§6.6)
+* **Mobile app (Expo, iOS/Android)** with **region-based push notifications** for weather danger, AI risk, air quality and daily briefings (§6.7)
 
 ### 5.2 Out of scope for MVP (roadmap)
 
 | Phase | Items |
 |---|---|
-| **2: Local authority** | Official NAMEM and KMA adapters, official warnings, Mongolian and Korean UI (i18n), radar/satellite tiles, typhoon and earthquake layers, Safety tab, PWA and push notifications for warnings, user accounts and cloud-synced favourites |
+| **2: Local authority** | Official NAMEM and KMA adapters, official warnings, full Mongolian and Korean UI (i18n), radar/satellite tiles, typhoon and earthquake layers, Safety tab, PWA, user accounts and cloud-synced favourites, background geofencing for notifications, AI model retraining pipeline on real observation archives |
 | **3: Monetise** | B2B weather API with keys and quotas, sponsored life-index cards, golf and ski venue pages, news feed, native apps |
 
 ---
@@ -203,7 +208,35 @@ Priority uses **MoSCoW** (M = must, S = should, C = could).
 | FR-M3 | Users can toggle between temperature and air-quality marker colouring | S |
 | FR-M4 | Clicking a marker opens that location's Home | M |
 
-### 6.6 Transparency and degraded operation
+### 6.6 AI prediction module
+
+| ID | Requirement | Pri |
+|---|---|---|
+| FR-AI1 | The system produces an AI-adjusted 72 h forecast (temperature, precipitation probability) by post-processing the NWP forecast with a model trained on past forecast-vs-observation residuals for that location | M |
+| FR-AI2 | Every AI value is shown next to the raw model value, with a P10–P90 uncertainty band, so users can see what the AI changed and how confident it is | M |
+| FR-AI3 | The system estimates the probability (0–1) of each KMA-style hazard threshold (BR-02) being crossed per day, and lists risks ≥ 20 % with a plain-language rationale | M |
+| FR-AI4 | The system shows model provenance: algorithm, version, training sample count, validation error vs raw NWP, and features used (explainability) | M |
+| FR-AI5 | When no model can be trained (no history, upstream down) the system falls back to climatology and labels it so; the Home page never depends on the AI service being up | M |
+| FR-AI6 | Models are retrained automatically (nightly) and on demand per location | S |
+| FR-AI7 | Hazard probabilities feed region notifications (FR-N4) | M |
+
+### 6.7 Mobile app and region-based notifications
+
+| ID | Requirement | Pri |
+|---|---|---|
+| FR-N1 | Users can install a mobile app (iOS/Android) that shows the Today, AI forecast and Alerts views for their regions | M |
+| FR-N2 | Users subscribe to one or more **regions** (aimag / province / city) or enable "follow my location", in which case the nearest region is chosen from the device's last known position | M |
+| FR-N3 | Users receive a push notification when a weather danger (advisory or warning, BR-02) starts for a subscribed region | M |
+| FR-N4 | Users receive a push notification when the AI hazard probability for a subscribed region exceeds their threshold (default 60 %) | M |
+| FR-N5 | Users receive a push notification when air quality reaches their chosen grade (default "bad") | M |
+| FR-N6 | Users can opt into a daily briefing at a chosen hour (region local time) | S |
+| FR-N7 | Users control alert types, minimum severity, quiet hours and language (en / mn / ko) | M |
+| FR-N8 | Notifications deep-link into the relevant region screen; the app keeps a history of the last 50 notifications | M |
+| FR-N9 | The same danger is never notified twice to the same device within 24 h (BR-09) | M |
+| FR-N10 | Users can send themselves a test notification to verify setup | S |
+| FR-N11 | No account is required; the device token is the identity. Deleting the app's registration removes all server-side data for that device | M |
+
+### 6.8 Transparency and degraded operation
 
 | ID | Requirement | Pri |
 |---|---|---|
@@ -261,8 +294,13 @@ The overall grade is the **worse** of PM10 and PM2.5. *Rationale:* stricter than
 
 **BR-07: AM/PM split.** AM covers 00:00–11:59 local time and PM covers 12:00–23:59. The representative condition is the most severe one in the window. Precipitation probability is the window maximum.
 
-**BR-08: Freshness.** Current and hourly data are cached for 10 minutes, air quality for 30 minutes, model comparison for 60 minutes and geocoding for 24 hours. When the upstream fails, the last good value is served for up to 6 hours, flagged as stale.
+**BR-08: Freshness.** Current and hourly data are cached for 10 minutes, air quality for 30 minutes, model comparison for 60 minutes, AI predictions for 30 minutes and geocoding for 24 hours. When the upstream fails, the last good value is served for up to 6 hours, flagged as stale.
 
+**BR-09: Notification dedup and etiquette.** One notification per (device, region, kind, hazard-or-grade, local day). Quiet hours (default none; typical 22:00–07:00 region local time) suppress everything except *warnings* (경보). An advisory that upgrades to a warning is a new event. Daily briefings are sent once per local day at the chosen hour ± 10 min.
+
+**BR-10: Region assignment.** A device with `followLocation` is assigned to the nearest region centre by great-circle distance, re-evaluated when the app reports a new position more than 25 km from the last one. Explicit region subscriptions are kept alongside.
+
+**BR-11: AI risk notification.** Triggered when `HazardRisk.probability ≥ preferences.aiRiskThreshold` for a subscribed region, with the hazard's severity. The message always states the probability ("72 % chance") and that it is an AI estimate, never as a confirmed warning.
 ---
 
 ## 8. User stories (MVP backlog)
@@ -279,6 +317,14 @@ The overall grade is the **worse** of PM10 and PM2.5. *Rationale:* stricter than
 | US-08 | Mobile user | the page to work on a 360 px phone | I can read it on the bus | No horizontal page scroll (the hourly strip excepted), and tap targets are ≥ 44 px |
 | US-09 | Any user | to see the map of the country | I see which cities are coldest | The Map shows region markers with temperature; clicking one opens Home for that city |
 | US-10 | Any user | to know when data is not live | I'm not misled | When `meta.mock` is true a "Demo data" badge is visible; when stale, a "Stale" badge |
+| US-11 | Herder / driver | a push alert when a cold wave or strong wind is likely in my aimag | I move livestock or delay the trip | Given a device subscribed to "mn-khovd", when the derived alert or AI risk crosses the threshold, then one push arrives within 10 min with title, severity, time window and a deep link; a second evaluation 10 min later sends nothing (BR-09) |
+| US-12 | Parent | a morning push with today's PM2.5 and outfit advice | I prepare the kids | Given dailyBriefingHour = 7, then a briefing arrives at 07:00 ± 10 min region time containing min/max, PM2.5 grade and clothing summary |
+| US-13 | Enthusiast | to see what the AI changed vs the raw model and how sure it is | I trust (or not) the forecast | The AI card shows the adjusted line, the raw NWP dashed line, a shaded P10–P90 band and the model's validation MAE vs raw |
+| US-14 | Traveller | alerts to follow me | I don't manage regions | With "follow my location" on, the nearest region is picked (BR-10) and shown in Settings |
+
+### 8.1 Why AI post-processing rather than a "weather foundation model"
+
+Naver, like KMA and ECMWF, presents **NWP output post-processed with statistics/ML** (MOS, bias correction, ensemble blending). That is where machine learning demonstrably improves consumer forecasts today: 10–30 % lower temperature error at 1–3 day lead times, and better-calibrated precipitation probabilities. Training a global foundation model (GraphCast, Pangu-Weather) needs ERA5-scale data and GPUs and is out of reach for an MVP. The module is therefore scoped to: per-location **bias correction**, **ensemble blending** with learned weights, **calibrated probabilities** and **hazard risk estimation**, with explicit explainability (FR-AI4). The architecture leaves room to swap in a learned global model later behind the same `/predict` contract.
 
 ---
 
@@ -321,6 +367,10 @@ The overall grade is the **worse** of PM10 and PM2.5. *Rationale:* stricter than
 | Air-quality model underestimates local smog (UB ger districts) | Medium | High | Add station-based sources (AirVisual, UB city monitoring) in Phase 2; show "model estimate" note |
 | Map tile policy violation at scale | Medium | Medium | Commercial tile provider or self-hosted tiles before marketing push |
 | Scope creep toward Naver's full feature set | High | Medium | MoSCoW backlog; phase gates tied to KPIs |
+| AI risk notifications create false alarms and alert fatigue | Medium | High | Default threshold 60 %, probability always stated, dedup (BR-09), user-tunable; monitor opt-out rate as a KPI |
+| AI model trained on synthetic/fallback data in degraded mode | Medium | Medium | `ModelInfo.algorithm = climatology-fallback` and `trainingSamples = 0` are surfaced in the UI; no notification is sent from fallback models |
+| Push delivery dependence on Expo/APNs/FCM | Low | Medium | Expo Push abstraction behind a `PushSender` port; direct FCM/APNs adapter later; delivery receipts monitored |
+| Location privacy on mobile | Medium | High | Foreground-only location, only the last position (rounded) is stored, deletable via DELETE /devices/:id; no account |
 
 ---
 
