@@ -114,7 +114,7 @@ export function createContainer(config: Config, overrides: Overrides = {}): Cont
   const locations = new LocationService(providers.geocoding, cache, policy(config.CACHE_TTL_GEOCODE), clock);
   const weather = new WeatherService(providers.weather, providers.air, locations, cache, policy(config.CACHE_TTL_WEATHER), log);
   const regions = new RegionService();
-  const ai = overrides.ai ?? new HttpAiPredictionProvider(config.AI_SERVICE_URL, config.UPSTREAM_TIMEOUT_MS, overrides.fetch);
+  const ai = overrides.ai ?? new HttpAiPredictionProvider(config.AI_SERVICE_URL, config.AI_TIMEOUT_MS, overrides.fetch);
   const predict = new PredictService(ai, cache, config.CACHE_TTL_PREDICT);
   const regionAlerts = new RegionAlertsService(weather, predict);
 

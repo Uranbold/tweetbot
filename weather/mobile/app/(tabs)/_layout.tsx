@@ -20,10 +20,10 @@ export default function TabsLayout() {
         sceneStyle: { backgroundColor: theme.colors.bg },
       }}
     >
-      <Tabs.Screen name="index" options={{ title: t.tabs.today, tabBarIcon: ({ color }) => <TabIcon name="today" color={color} /> }} />
-      <Tabs.Screen name="ai" options={{ title: t.tabs.ai, tabBarIcon: ({ color }) => <TabIcon name="ai" color={color} /> }} />
-      <Tabs.Screen name="alerts" options={{ title: t.tabs.alerts, tabBarIcon: ({ color }) => <TabIcon name="alerts" color={color} /> }} />
-      <Tabs.Screen name="settings" options={{ title: t.tabs.settings, tabBarIcon: ({ color }) => <TabIcon name="settings" color={color} /> }} />
+      <Tabs.Screen name="index" options={{ title: t.tabs.today, tabBarIcon: ({ color }) => <TabIcon name="today" color={String(color)} /> }} />
+      <Tabs.Screen name="ai" options={{ title: t.tabs.ai, tabBarIcon: ({ color }) => <TabIcon name="ai" color={String(color)} /> }} />
+      <Tabs.Screen name="alerts" options={{ title: t.tabs.alerts, tabBarIcon: ({ color }) => <TabIcon name="alerts" color={String(color)} /> }} />
+      <Tabs.Screen name="settings" options={{ title: t.tabs.settings, tabBarIcon: ({ color }) => <TabIcon name="settings" color={String(color)} /> }} />
     </Tabs>
   );
 }

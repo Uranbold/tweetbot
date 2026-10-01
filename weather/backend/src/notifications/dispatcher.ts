@@ -4,7 +4,7 @@
  * and 24 h dedup; send through the PushSender; record history.
  */
 import { randomUUID } from 'node:crypto';
-import type { AlertSeverity, Device, NotificationKind, NotificationMessage, Region } from '../types.js';
+import type { AlertSeverity, Device, HazardRisk, NotificationKind, NotificationMessage, Region } from '../types.js';
 import { gradeAtLeast } from '../domain/air.js';
 import { severityAtLeast } from '../domain/alerts.js';
 import { dateOf, hourOf, localTimeAt } from '../lib/time.js';
@@ -68,6 +68,20 @@ export function effectiveRegionIds(device: Device, regions: RegionService): stri
   return [...ids];
 }
 
+/**
+ * The AI service may list one hazard twice (advisory + warning). Keep, per hazard, the highest
+ * severity whose probability reaches the device threshold.
+ */
+export function topRisksByHazard(risks: readonly HazardRisk[], threshold: number): HazardRisk[] {
+  const best = new Map<HazardRisk['hazard'], HazardRisk>();
+  for (const r of risks) {
+    if (r.probability < threshold) continue;
+    const cur = best.get(r.hazard);
+    if (!cur || severityAtLeast(r.severity, cur.severity) && (r.severity !== cur.severity || r.probability > cur.probability)) best.set(r.hazard, r);
+  }
+  return [...best.values()];
+}
+
 interface Candidate {
   kind: NotificationKind;
   subject: string; // hazard | grade | "day"
@@ -94,8 +108,7 @@ export function candidatesFor(device: Device, region: Region, cond: RegionCondit
     });
   }
   if (p.aiRiskThreshold > 0) {
-    for (const r of cond.risks) {
-      if (r.probability < p.aiRiskThreshold) continue;
+    for (const r of topRisksByHazard(cond.risks, p.aiRiskThreshold)) {
       if (!p.alertTypes.includes(r.hazard) || !severityAtLeast(r.severity, p.minSeverity)) continue;
       out.push({
         kind: 'ai-risk',

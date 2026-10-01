@@ -38,6 +38,8 @@ const schema = z.object({
   RATE_LIMIT_WINDOW_MS: int(60_000, 1000),
   TRUST_PROXY: bool(false),
   AI_SERVICE_URL: z.string().url().default('http://localhost:8790'),
+  /** The AI service trains a model on the first request per location (~3.5–5 s), so it gets its own timeout. */
+  AI_TIMEOUT_MS: int(12_000, 100, 120_000),
   PUSH_MODE: z.enum(['log', 'expo']).default('log'),
   EXPO_ACCESS_TOKEN: z.string().optional(),
   DISPATCH_ENABLED: bool(true),
