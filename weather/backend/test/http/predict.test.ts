@@ -57,6 +57,36 @@ describe('GET /predict (AI proxy)', () => {
     expect(urls).toEqual(['http://ai.internal:8790/predict?lat=37.57&lon=126.98&hours=24']);
   });
 
+  it('uses AI_TIMEOUT_MS (not UPSTREAM_TIMEOUT_MS) for the AI service', async () => {
+    let aborted = false;
+    const slow = (_u: string, init?: RequestInit) =>
+      new Promise<Response>((resolve, reject) => {
+        const t = setTimeout(() => resolve(jsonResponse(aiBody())), 150);
+        init?.signal?.addEventListener('abort', () => {
+          aborted = true;
+          clearTimeout(t);
+          reject(new DOMException('aborted', 'AbortError'));
+        });
+      });
+    ({ app } = await makeApp({ UPSTREAM_TIMEOUT_MS: '100', AI_TIMEOUT_MS: '1000' }, { fetch: slow }));
+    expect((await app.inject('/api/v1/predict?lat=1&lon=1')).statusCode).toBe(200);
+    expect(aborted).toBe(false);
+    await app.close();
+    ({ app } = await makeApp({ UPSTREAM_TIMEOUT_MS: '5000', AI_TIMEOUT_MS: '100' }, { fetch: slow }));
+    expect((await app.inject('/api/v1/predict?lat=1&lon=1')).statusCode).toBe(503);
+    expect(aborted).toBe(true);
+  });
+
+  it('/health surfaces AI reachability', async () => {
+    const ai = fakeAi();
+    ({ app } = await makeApp({}, { ai: ai.provider }));
+    expect((await app.inject('/api/v1/health')).json()).toMatchObject({ ai: 'reachable', aiService: { status: 'ok', dataMode: 'synthetic' } });
+    await app.close();
+    ai.state.up = false;
+    ({ app } = await makeApp({}, { ai: ai.provider }));
+    expect((await app.inject('/api/v1/health')).json().ai).toBe('unreachable');
+  });
+
   it('rejects a malformed AI response as UPSTREAM_UNAVAILABLE', async () => {
     ({ app } = await makeApp({}, { fetch: async () => jsonResponse({ hello: 'world' }) }));
     const r = await app.inject('/api/v1/predict?lat=1&lon=1');

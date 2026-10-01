@@ -77,7 +77,8 @@ export function topRisksByHazard(risks: readonly HazardRisk[], threshold: number
   for (const r of risks) {
     if (r.probability < threshold) continue;
     const cur = best.get(r.hazard);
-    if (!cur || severityAtLeast(r.severity, cur.severity) && (r.severity !== cur.severity || r.probability > cur.probability)) best.set(r.hazard, r);
+    const upgrade = cur && severityAtLeast(r.severity, cur.severity) && (r.severity !== cur.severity || r.probability > cur.probability);
+    if (!cur || upgrade) best.set(r.hazard, r);
   }
   return [...best.values()];
 }

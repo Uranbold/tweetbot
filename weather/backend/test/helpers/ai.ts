@@ -22,6 +22,10 @@ export function aiBody(risks: HazardRisk[] = []): ApiResponse<AiPrediction> {
 export function fakeAi(risks: HazardRisk[] = []) {
   const state = { up: true, calls: 0, risks };
   const provider: AiPredictionProvider = {
+    async health() {
+      if (!state.up) throw new UpstreamError('ai-service', 'network', 'connect ECONNREFUSED 127.0.0.1:8790');
+      return { status: 'ok', service: 'skycast-ai', version: '1.0.0', uptimeSeconds: 5, dataMode: 'synthetic', modelsLoaded: 2 };
+    },
     async predict() {
       state.calls++;
       if (!state.up) throw new UpstreamError('ai-service', 'network', 'connect ECONNREFUSED 127.0.0.1:8790');

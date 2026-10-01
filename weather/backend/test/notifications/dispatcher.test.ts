@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { AirQualitySnapshot, DeviceRegistration, HazardRisk, NotificationPreferences, Region, WeatherAlert } from '../../src/types.js';
-import { Dispatcher, dedupKey, effectiveRegionIds, inQuietHours, scheduleDispatcher } from '../../src/notifications/dispatcher.js';
+import { Dispatcher, dedupKey, effectiveRegionIds, inQuietHours, scheduleDispatcher, topRisksByHazard } from '../../src/notifications/dispatcher.js';
 import { LogPushSender, type PushSender } from '../../src/notifications/push.js';
 import { InMemoryDeviceRepository, InMemoryNotificationHistoryRepository } from '../../src/notifications/repositories.js';
 import type { RegionConditions } from '../../src/services/regionAlertsService.js';
@@ -109,6 +109,21 @@ describe('dispatcher', () => {
     expect(r.sent).toHaveLength(1);
     expect(r.sent[0]).toMatchObject({ kind: 'ai-risk', title: 'Heavy snow likely (70%) · Ulaanbaatar', dedupKey: 'mn-ulaanbaatar:ai-risk:heavy-snow:2026-10-01' });
     expect(await s.history.listForDevice(yes.id)).toHaveLength(1);
+  });
+
+  it('collapses advisory + warning entries for one hazard into the highest severity above the threshold', async () => {
+    const risks: HazardRisk[] = [
+      { hazard: 'cold-wave', severity: 'advisory', probability: 0.9, rationale: 'a' },
+      { hazard: 'cold-wave', severity: 'warning', probability: 0.65, rationale: 'w' },
+      { hazard: 'heavy-snow', severity: 'warning', probability: 0.3, rationale: 'sw' },
+      { hazard: 'heavy-snow', severity: 'advisory', probability: 0.7, rationale: 'sa' },
+    ];
+    expect(topRisksByHazard(risks, 0.6).map((r) => `${r.hazard}:${r.severity}`)).toEqual(['cold-wave:warning', 'heavy-snow:advisory']);
+    expect(topRisksByHazard(risks, 0.8).map((r) => `${r.hazard}:${r.severity}`)).toEqual(['cold-wave:advisory']);
+    const s = setup(() => conditions({ risks }));
+    await s.add({}, { aiRiskThreshold: 0.6 });
+    const r = await s.dispatcher.runOnce(NOW);
+    expect(r.sent.map((m) => `${m.data.hazard}:${m.severity}`).sort()).toEqual(['cold-wave:warning', 'heavy-snow:advisory']);
   });
 
   it('notifies when the air grade reaches the threshold', async () => {
