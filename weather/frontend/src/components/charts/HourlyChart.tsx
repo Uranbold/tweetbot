@@ -127,8 +127,6 @@ export function HourlyChart({ hourly, metric, today, colWidth = HOURLY_COL_WIDTH
             );
           })}
         </div>
-        <span className="hourly__nowrule" style={{ left: cx(0) - 1 }} aria-hidden="true" />
-        {active != null && <span className="hourly__cross" style={{ left: cx(active) - 0.5 }} aria-hidden="true" />}
         <ol className="hourly__cols" aria-label="Hourly forecast">
           {hourly.map((h, i) => {
             const isBoundary = i > 0 && boundaries.includes(i);
@@ -148,6 +146,8 @@ export function HourlyChart({ hourly, metric, today, colWidth = HOURLY_COL_WIDTH
           })}
         </ol>
         <div className="hourly__plot" aria-hidden="true">
+          <span className="hourly__nowrule" style={{ left: cx(0) - 1 }} />
+          {active != null && <span className="hourly__cross" style={{ left: cx(active) - 0.5 }} />}
           {metric === 'temperature' && <TemperatureLine hourly={hourly} width={width} cx={cx} active={active} />}
           {metric === 'precipitation' && <PrecipBars hourly={hourly} width={width} cx={cx} colWidth={colWidth} />}
           {metric === 'humidity' && <HumidityBars hourly={hourly} width={width} cx={cx} colWidth={colWidth} />}

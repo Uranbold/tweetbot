@@ -29,17 +29,43 @@ describe('HourlyChart', () => {
     expect(screen.getByText('Sat Oct 3')).toBeInTheDocument();
   });
 
-  it('switches metric via keyboard-accessible tabs', async () => {
+  it('exposes exactly 4 metric toggles (Hick) and switches the plotted metric', async () => {
     render(<HourlyCard hourly={hourly} today="2026-10-01" />);
-    const tab = screen.getByRole('tab', { name: 'Temperature' });
-    expect(tab).toHaveAttribute('aria-selected', 'true');
-    tab.focus();
-    await userEvent.keyboard('{ArrowRight}');
-    expect(screen.getByRole('tab', { name: 'Precipitation' })).toHaveAttribute('aria-selected', 'true');
+    const group = screen.getByRole('group', { name: 'Hourly metric' });
+    const toggles = within(group).getAllByRole('button');
+    expect(toggles.map((b) => b.textContent)).toEqual(['Temp', 'Rain', 'Humidity', 'Wind']);
+    expect(toggles[0]).toHaveAttribute('aria-pressed', 'true');
+    await userEvent.click(toggles[1]);
+    expect(toggles[1]).toHaveAttribute('aria-pressed', 'true');
     expect(screen.queryAllByTestId('hourly-point')).toHaveLength(0);
-    // Only wet hours draw a bar.
-    expect(screen.getAllByTestId('hourly-bar')).toHaveLength(hourly.filter((h) => h.precipitation > 0).length);
-    await userEvent.click(screen.getByRole('tab', { name: 'Humidity' }));
+    // Only wet hours draw a bar; bars are baseline-anchored paths.
+    const bars = screen.getAllByTestId('hourly-bar');
+    expect(bars).toHaveLength(hourly.filter((h) => h.precipitation > 0).length);
+    expect(bars[0].tagName).toBe('path');
+    await userEvent.click(toggles[2]);
     expect(screen.getAllByTestId('hourly-bar')).toHaveLength(48);
+  });
+
+  it('offers a table view of the same data', async () => {
+    render(<HourlyCard hourly={hourly} today="2026-10-01" />);
+    await userEvent.click(screen.getByRole('button', { name: 'Table view' }));
+    const table = screen.getByRole('region', { name: 'Hourly forecast table' });
+    expect(within(table).getAllByRole('row')).toHaveLength(49);
+    expect(within(table).getAllByRole('cell')[1]).toHaveTextContent('12°C');
+    expect(screen.queryByTestId('hourly-chart')).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Chart view' }));
+    expect(screen.getByTestId('hourly-chart')).toBeInTheDocument();
+  });
+
+  it('moves a crosshair tooltip with the arrow keys', async () => {
+    render(<HourlyChart hourly={hourly} metric="temperature" today="2026-10-01" />);
+    const region = screen.getByRole('region', { name: /Hourly forecast, scrollable/ });
+    region.focus();
+    await userEvent.keyboard('{ArrowRight}{ArrowRight}');
+    const tip = screen.getByText('Today · 3 PM').closest('.chart-tip')!;
+    expect(tip).toHaveTextContent('Feels');
+    expect(screen.getAllByRole('listitem')[1]).toHaveClass('is-active');
+    await userEvent.keyboard('{End}');
+    expect(screen.getByText(/Sat Oct 3 · 1 PM/)).toBeInTheDocument();
   });
 });

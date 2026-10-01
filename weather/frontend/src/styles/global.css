@@ -1523,6 +1523,14 @@ button.week-row__btn:hover {
   min-width: 0;
 }
 .air-tile__name {
+  white-space: normal;
+}
+@media (max-width: 399px) {
+  .air-summary__pair {
+    grid-template-columns: 1fr;
+  }
+}
+.air-tile__name {
   font-size: var(--fs-12);
   color: var(--fg-2);
   font-weight: 600;
@@ -1708,9 +1716,12 @@ button.week-row__btn:hover {
   padding: 1px var(--s-2);
   white-space: nowrap;
 }
+.hourly__plot {
+  position: relative;
+}
 .hourly__nowrule {
   position: absolute;
-  top: 24px;
+  top: 0;
   bottom: 0;
   width: 2px;
   background: var(--accent);
@@ -1719,7 +1730,7 @@ button.week-row__btn:hover {
 }
 .hourly__cross {
   position: absolute;
-  top: 24px;
+  top: 0;
   bottom: 0;
   width: 1px;
   background: var(--fg-3);

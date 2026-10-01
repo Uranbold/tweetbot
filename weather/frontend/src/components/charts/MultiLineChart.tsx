@@ -12,7 +12,7 @@ export interface LineSeries {
 
 const H = 240;
 const M = { top: 16, right: 16, bottom: 28, left: 34 };
-const LABEL_W = 92;
+const LABEL_W = 118;
 
 /** Spreads end-label y positions so they never overlap (min gap px), keeping order. */
 export function spreadLabels(ys: number[], gap: number, lo: number, hi: number): number[] {

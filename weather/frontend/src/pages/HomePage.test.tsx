@@ -24,10 +24,15 @@ describe('HomePage', () => {
     renderHome();
     expect(screen.getByRole('status', { name: 'Loading current weather' })).toBeInTheDocument();
     expect(await screen.findByRole('heading', { level: 1, name: 'Ulaanbaatar' })).toBeInTheDocument();
-    for (const title of ['Hourly forecast', 'AI forecast', 'Life & health indices', "Today's outfit", '10-day forecast', 'Air quality', 'Sunrise & sunset', 'Nationwide weather']) {
-      expect(screen.getByRole('heading', { level: 2, name: title })).toBeInTheDocument();
-    }
+    // Hick's law: ≤ 8 cards on Home.
+    const titles = ['Hourly forecast', '10-day forecast', 'AI forecast', 'Outfit & life indices', 'Air quality', 'Sunrise & sunset', 'Nationwide weather'];
+    for (const title of titles) expect(screen.getByRole('heading', { level: 2, name: title })).toBeInTheDocument();
+    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(titles.length);
+    expect(screen.getByRole('heading', { level: 3, name: "Today's outfit" })).toBeInTheDocument();
     expect(screen.getByText('Strong wind advisory')).toBeInTheDocument();
+    // Advisory: no stripe, not an alert role (only warnings are loud).
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(screen.getByText('Loaded weather for Ulaanbaatar')).toBeInTheDocument();
     expect(await screen.findByRole('link', { name: /Darkhan/ })).toBeInTheDocument();
   });
 

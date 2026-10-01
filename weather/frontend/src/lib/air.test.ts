@@ -1,18 +1,20 @@
 import { describe, expect, it } from 'vitest';
-import { AIR_GRADE_COLORS, DEFAULT_SCALE, gradeColor, gradeForValue, gradeLabel, worseGrade } from './air';
+import { AIR_GRADE_COLORS, AIR_GRADE_HEX, DEFAULT_SCALE, gradeColor, gradeForValue, gradeLabel, worseGrade } from './air';
 import { gaugePosition } from '../components/charts/Gauge';
 
 describe('air grade colours', () => {
-  it('uses Naver-style blue / green / orange / red', () => {
-    expect(gradeColor('good')).toBe('#3a8bff');
+  it('maps grades to theme tokens backed by the UX §3.3 hex values (blue / green / orange / red)', () => {
+    expect(gradeColor('good')).toBe('var(--grade-good)');
     expect(gradeColor('moderate')).toBe(AIR_GRADE_COLORS.moderate);
-    expect(gradeColor('bad')).toBe('#f58a1f');
-    expect(gradeColor('very-bad')).toBe('#e5484d');
+    expect(gradeColor('bad')).toBe('var(--grade-bad)');
+    expect(gradeColor('very-bad')).toBe('var(--grade-very-bad)');
     expect(new Set(Object.values(AIR_GRADE_COLORS)).size).toBe(4);
+    expect(AIR_GRADE_HEX.light).toEqual({ good: '#2a78d6', moderate: '#1a9e4b', bad: '#e0860a', 'very-bad': '#c7322e' });
+    expect(AIR_GRADE_HEX.dark['very-bad']).toBe('#e05a52');
   });
 
   it('falls back to a neutral colour and "No data" label', () => {
-    expect(gradeColor(null)).toBe('var(--text-muted)');
+    expect(gradeColor(null)).toBe('var(--fg-3)');
     expect(gradeLabel(undefined)).toBe('No data');
     expect(gradeLabel('very-bad')).toBe('Very bad');
   });

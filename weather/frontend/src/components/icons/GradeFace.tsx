@@ -1,5 +1,5 @@
 import type { AirGrade } from '@contract';
-import { gradeColor, gradeLabel } from '../../lib/air';
+import { gradeColor } from '../../lib/air';
 
 /**
  * Naver-style dust face glyph (UX §3.3): smile · neutral · mask · frown, drawn as inline SVG so it
@@ -47,7 +47,6 @@ export function GradeFace({ grade, size = 16, label }: { grade: AirGrade | null 
         </g>
       )}
       {!grade && <path d="M8.5 12h7" stroke="var(--fg-3)" strokeWidth={1.75} strokeLinecap="round" />}
-      <desc>{gradeLabel(grade)}</desc>
     </svg>
   );
 }
