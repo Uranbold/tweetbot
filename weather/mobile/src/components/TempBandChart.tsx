@@ -85,7 +85,8 @@ export function TempBandChart({ hourly, locale, labels, height = 180, hours = 48
     return ticks;
   }, [scales]);
 
-  const xTicks = useMemo(() => points.map((p, i) => ({ p, i })).filter(({ i }) => i % 6 === 0), [points]);
+  // One label every 8 h keeps ≥ 50 px between labels at 390 px wide (no collisions).
+  const xTicks = useMemo(() => points.map((p, i) => ({ p, i })).filter(({ i }) => i % 8 === 0 && i < points.length - 2), [points]);
 
   const aiColor = theme.colors.fg;
   const nwpColor = theme.colors.fg3;

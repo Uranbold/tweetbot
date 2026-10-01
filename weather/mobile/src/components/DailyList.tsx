@@ -34,7 +34,9 @@ export function DailyList({ days, todayDate, locale, t, initialCount = 7, curren
           style={[styles.row, i > 0 && { borderTopColor: theme.colors.border, borderTopWidth: StyleSheet.hairlineWidth }]}
         >
           <View style={styles.day}>
-            <Text style={[type.smallStrong, { color: i === 0 ? theme.colors.accent : theme.colors.fg }]}>{formatDayLabel(d.date, todayDate, locale, t)}</Text>
+            <Text style={[type.smallStrong, { color: i === 0 ? theme.colors.accent : theme.colors.fg }]} numberOfLines={1}>
+              {formatDayLabel(d.date, todayDate, locale, t)}
+            </Text>
             <Text style={[type.label, { color: theme.colors.fg3 }]}>{formatShortDate(d.date)}</Text>
           </View>
           <View style={styles.half}>
@@ -68,11 +70,11 @@ export function DailyList({ days, todayDate, locale, t, initialCount = 7, curren
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', minHeight: 56, paddingVertical: 6, gap: 6 },
-  day: { width: 56 },
-  half: { alignItems: 'center', width: 38 },
-  min: { width: 36, textAlign: 'right' },
+  row: { flexDirection: 'row', alignItems: 'center', minHeight: 56, paddingVertical: 6, gap: 4 },
+  day: { width: 68 },
+  half: { alignItems: 'center', width: 36 },
+  min: { width: 34, textAlign: 'right' },
   bar: { flex: 1, paddingHorizontal: 6 },
-  max: { width: 36 },
+  max: { width: 34 },
   more: { minHeight: 44, alignItems: 'center', justifyContent: 'center' },
 });

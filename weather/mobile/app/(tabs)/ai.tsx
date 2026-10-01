@@ -74,9 +74,10 @@ export default function AiScreen() {
                       <Text style={[type.bodyStrong, type.num, { color: theme.colors.fg }]}>
                         {roundTemp(d.temperatureMax)} <Text style={{ color: theme.colors.fg2 }}>/ {roundTemp(d.temperatureMin)}</Text>
                       </Text>
-                      <Text style={[type.label, type.num, { color: theme.colors.fg2 }]}>
-                        {t.band} {roundTemp(d.temperatureMinP10)}…{roundTemp(d.temperatureMaxP90)}
+                      <Text style={[type.label, type.num, { color: theme.colors.fg2 }]} numberOfLines={1}>
+                        {roundTemp(d.temperatureMinP10)} … {roundTemp(d.temperatureMaxP90)}
                       </Text>
+                      <Text style={[type.label, { color: theme.colors.fg3 }]}>{t.band}</Text>
                     </View>
                   ))}
                 </View>

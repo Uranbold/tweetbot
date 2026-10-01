@@ -87,6 +87,10 @@ All data comes from [Open-Meteo](https://open-meteo.com) (CC BY 4.0): forecast, 
 | [Home, desktop, light](docs/screens/home-1280-light.png) | [Home, phone, dark](docs/screens/home-390-dark.png) |
 | [Air quality, desktop](docs/screens/air-1280-light.png) | [Compare forecasts, dark](docs/screens/compare-1280-dark.png) |
 | [Map](docs/screens/map-1280-light.png) (OSM tiles blocked in the build sandbox) | |
+| [Mobile: Today](docs/screens/mobile-today-tall-light.png) | [Mobile: AI forecast](docs/screens/mobile-ai-light.png) |
+| [Mobile: Regions & notification settings, dark](docs/screens/mobile-settings-tall-dark.png) | |
+
+Mobile screenshots are from the Expo web export in fixture mode (no device in the build sandbox).
 
 ## Documents
 
