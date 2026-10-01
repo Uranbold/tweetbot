@@ -1,0 +1,22 @@
+{
+  "data": [
+    {
+      "id": "mn",
+      "label": "Mongolia"
+    },
+    {
+      "id": "kr",
+      "label": "South Korea"
+    },
+    {
+      "id": "world",
+      "label": "World"
+    }
+  ],
+  "meta": {
+    "provider": "fixture",
+    "fetchedAt": "2026-10-01T06:00:00Z",
+    "stale": false,
+    "mock": true
+  }
+}
