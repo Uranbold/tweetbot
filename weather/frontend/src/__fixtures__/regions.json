@@ -1,0 +1,192 @@
+{
+  "data": [
+    {
+      "id": "mn-ulaanbaatar",
+      "name": "Ulaanbaatar",
+      "country": "MN",
+      "lat": 47.92,
+      "lon": 106.92
+    },
+    {
+      "id": "mn-erdenet",
+      "name": "Erdenet",
+      "country": "MN",
+      "lat": 49.03,
+      "lon": 104.08
+    },
+    {
+      "id": "mn-darkhan",
+      "name": "Darkhan",
+      "country": "MN",
+      "lat": 49.49,
+      "lon": 105.92
+    },
+    {
+      "id": "mn-choibalsan",
+      "name": "Choibalsan",
+      "country": "MN",
+      "lat": 48.07,
+      "lon": 114.53
+    },
+    {
+      "id": "mn-moron",
+      "name": "Mörön",
+      "country": "MN",
+      "lat": 49.64,
+      "lon": 100.16
+    },
+    {
+      "id": "mn-khovd",
+      "name": "Khovd",
+      "country": "MN",
+      "lat": 48.01,
+      "lon": 91.64
+    },
+    {
+      "id": "mn-olgii",
+      "name": "Ölgii",
+      "country": "MN",
+      "lat": 48.97,
+      "lon": 89.96
+    },
+    {
+      "id": "mn-bayankhongor",
+      "name": "Bayankhongor",
+      "country": "MN",
+      "lat": 46.19,
+      "lon": 100.72
+    },
+    {
+      "id": "mn-dalanzadgad",
+      "name": "Dalanzadgad",
+      "country": "MN",
+      "lat": 43.57,
+      "lon": 104.43
+    },
+    {
+      "id": "mn-sainshand",
+      "name": "Sainshand",
+      "country": "MN",
+      "lat": 44.89,
+      "lon": 110.14
+    },
+    {
+      "id": "mn-arvaikheer",
+      "name": "Arvaikheer",
+      "country": "MN",
+      "lat": 46.26,
+      "lon": 102.78
+    },
+    {
+      "id": "mn-uliastai",
+      "name": "Uliastai",
+      "country": "MN",
+      "lat": 47.74,
+      "lon": 96.84
+    },
+    {
+      "id": "mn-baruun-urt",
+      "name": "Baruun-Urt",
+      "country": "MN",
+      "lat": 46.68,
+      "lon": 113.28
+    },
+    {
+      "id": "mn-tsetserleg",
+      "name": "Tsetserleg",
+      "country": "MN",
+      "lat": 47.47,
+      "lon": 101.45
+    },
+    {
+      "id": "kr-seoul",
+      "name": "Seoul",
+      "country": "KR",
+      "lat": 37.57,
+      "lon": 126.98
+    },
+    {
+      "id": "kr-incheon",
+      "name": "Incheon",
+      "country": "KR",
+      "lat": 37.46,
+      "lon": 126.71
+    },
+    {
+      "id": "kr-chuncheon",
+      "name": "Chuncheon",
+      "country": "KR",
+      "lat": 37.87,
+      "lon": 127.73
+    },
+    {
+      "id": "kr-gangneung",
+      "name": "Gangneung",
+      "country": "KR",
+      "lat": 37.75,
+      "lon": 128.9
+    },
+    {
+      "id": "kr-daejeon",
+      "name": "Daejeon",
+      "country": "KR",
+      "lat": 36.35,
+      "lon": 127.38
+    },
+    {
+      "id": "kr-cheongju",
+      "name": "Cheongju",
+      "country": "KR",
+      "lat": 36.64,
+      "lon": 127.49
+    },
+    {
+      "id": "kr-jeonju",
+      "name": "Jeonju",
+      "country": "KR",
+      "lat": 35.82,
+      "lon": 127.15
+    },
+    {
+      "id": "kr-gwangju",
+      "name": "Gwangju",
+      "country": "KR",
+      "lat": 35.16,
+      "lon": 126.85
+    },
+    {
+      "id": "kr-daegu",
+      "name": "Daegu",
+      "country": "KR",
+      "lat": 35.87,
+      "lon": 128.6
+    },
+    {
+      "id": "kr-busan",
+      "name": "Busan",
+      "country": "KR",
+      "lat": 35.1,
+      "lon": 129.04
+    },
+    {
+      "id": "kr-ulsan",
+      "name": "Ulsan",
+      "country": "KR",
+      "lat": 35.54,
+      "lon": 129.31
+    },
+    {
+      "id": "kr-jeju",
+      "name": "Jeju",
+      "country": "KR",
+      "lat": 33.5,
+      "lon": 126.53
+    }
+  ],
+  "meta": {
+    "provider": "fixture",
+    "fetchedAt": "2026-10-01T06:00:00Z",
+    "stale": false,
+    "mock": true
+  }
+}

@@ -1,0 +1,201 @@
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { MapContainer, Marker, TileLayer, Tooltip, useMap } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import type { CitySnapshot } from '@contract';
+import { useNation } from '../api/hooks';
+import { useSavedPlaces } from '../hooks/useFavorites';
+import { Card } from '../components/common/Card';
+import { Segmented } from '../components/common/Segmented';
+import { ErrorState } from '../components/common/ErrorState';
+import { GradeBadge } from '../components/common/GradeBadge';
+import { WeatherIcon } from '../components/icons/WeatherIcon';
+import { GradeFace } from '../components/icons/GradeFace';
+import { AIR_GRADES, gradeLabel } from '../lib/air';
+import { formatTemp } from '../lib/format';
+import { placeSearch, toPlace } from '../lib/places';
+import { REGIONS, REGION_VIEW, isRegion, type RegionId } from '../lib/regions';
+
+type Layer = 'temp' | 'air';
+
+/** Marker body as JSX; rendered into a hidden template and copied into Leaflet divIcons. */
+function MarkerContent({ c, layer }: { c: CitySnapshot; layer: Layer }) {
+  return layer === 'air' ? (
+    <div className="map-marker map-marker--air" data-grade={c.pm10Grade ?? 'none'}>
+      <GradeFace grade={c.pm10Grade} size={18} />
+      <span className="map-marker__name">{c.location.name}</span>
+    </div>
+  ) : (
+    <div className="map-marker">
+      <WeatherIcon condition={c.condition} size={26} label="" />
+      <span className="map-marker__value">{formatTemp(c.temperature)}</span>
+      <span className="map-marker__name">{c.location.name}</span>
+    </div>
+  );
+}
+
+function FitToCities({ cities, region }: { cities: CitySnapshot[]; region: RegionId }) {
+  const map = useMap();
+  useEffect(() => {
+    if (cities.length < 2) {
+      map.setView(REGION_VIEW[region].center, REGION_VIEW[region].zoom);
+      return;
+    }
+    const bounds = L.latLngBounds(cities.map((c) => [c.location.lat, c.location.lon] as [number, number]));
+    map.fitBounds(bounds, { padding: [36, 48], maxZoom: 8 });
+  }, [cities, region, map]);
+  return null;
+}
+
+export default function MapPage() {
+  const [sp, setSp] = useSearchParams();
+  const navigate = useNavigate();
+  const { addRecent } = useSavedPlaces();
+  const region: RegionId = isRegion(sp.get('region')) ? (sp.get('region') as RegionId) : 'mn';
+  const layer: Layer = sp.get('layer') === 'air' ? 'air' : 'temp';
+  const q = useNation(region);
+  const cities = useMemo(() => q.data?.data.cities ?? [], [q.data]);
+  const hasAir = cities.some((c) => c.pm10Grade);
+
+  useEffect(() => {
+    document.title = `Weather map · ${q.data?.data.regionLabel ?? ''} · Skycast`;
+  }, [q.data]);
+
+  const setParam = (key: string, value: string | null) =>
+    setSp(
+      (prev) => {
+        const p = new URLSearchParams(prev);
+        if (value == null) p.delete(key);
+        else p.set(key, value);
+        return p;
+      },
+      { replace: true },
+    );
+
+  const open = (c: CitySnapshot) => {
+    const p = toPlace(c.location);
+    addRecent(p);
+    navigate({ pathname: '/', search: placeSearch(p) });
+  };
+
+  // Marker HTML is rendered by React into a hidden template, then handed to Leaflet as divIcons.
+  const templateRef = useRef<HTMLDivElement>(null);
+  const [icons, setIcons] = useState<Map<string, L.DivIcon>>(() => new Map());
+  useEffect(() => {
+    const next = new Map<string, L.DivIcon>();
+    templateRef.current?.querySelectorAll<HTMLElement>('[data-city]').forEach((el) => {
+      next.set(el.dataset.city!, L.divIcon({ html: el.innerHTML, className: 'map-marker-wrap', iconSize: undefined, iconAnchor: [0, 0] }));
+    });
+    setIcons(next);
+  }, [cities, layer]);
+
+  return (
+    <div className="page-map">
+      <section className="card map-card" aria-labelledby="map-title">
+        <header className="map-card__head">
+          <h1 id="map-title" className="current__place">
+            Weather map
+          </h1>
+          <div className="map-card__controls">
+            <Segmented options={REGIONS} value={region} onChange={(r) => setParam('region', r === 'mn' ? null : r)} label="Region" />
+            <Segmented
+              options={[
+                { value: 'temp', label: 'Temperature' },
+                ...(hasAir || layer === 'air' ? [{ value: 'air' as const, label: 'Fine dust' }] : []),
+              ]}
+              value={layer}
+              onChange={(l) => setParam('layer', l === 'temp' ? null : l)}
+              label="Map layer"
+            />
+          </div>
+        </header>
+        <div ref={templateRef} hidden>
+          {cities.map((c) => (
+            <div key={c.location.id} data-city={c.location.id}>
+              <MarkerContent c={c} layer={layer} />
+            </div>
+          ))}
+        </div>
+        <div className="map-wrap">
+          <MapContainer center={REGION_VIEW[region].center} zoom={REGION_VIEW[region].zoom} zoomSnap={0.25} scrollWheelZoom className="map" worldCopyJump>
+            <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+            {cities.filter((c) => icons.has(c.location.id)).map((c) => (
+              <Marker
+                key={c.location.id}
+                position={[c.location.lat, c.location.lon]}
+                icon={icons.get(c.location.id)}
+                keyboard
+                title={`${c.location.name}: ${formatTemp(c.temperature)}, ${c.condition.label}`}
+                alt={c.location.name}
+                eventHandlers={{ click: () => open(c) }}
+              >
+                <Tooltip direction="top" offset={[0, -6]}>
+                  {c.location.name} · {c.condition.label} · {formatTemp(c.temperatureMin)}/{formatTemp(c.temperatureMax)}
+                  {c.pm10Grade ? ` · Dust ${gradeLabel(c.pm10Grade)}` : ''}
+                </Tooltip>
+              </Marker>
+            ))}
+            <FitToCities cities={cities} region={region} />
+          </MapContainer>
+          {q.isPending && <div className="map-overlay" role="status">Loading cities…</div>}
+        </div>
+        {layer === 'air' && (
+          <ul className="legend__list map-legend" aria-label="Fine dust (PM10) grades">
+            {AIR_GRADES.map((g) => (
+              <li key={g} className="legend__item">
+                <GradeFace grade={g} size={16} />
+                {gradeLabel(g)}
+              </li>
+            ))}
+            <li className="legend__item">
+              <GradeFace grade={null} size={16} />
+              No data
+            </li>
+          </ul>
+        )}
+        {q.isError && <ErrorState compact error={q.error} onRetry={() => q.refetch()} title="Could not load cities" />}
+      </section>
+
+      {cities.length > 0 && (
+        <Card title={`${q.data?.data.regionLabel ?? ''} cities`} className="map-list-card">
+          <div className="scroll-x" tabIndex={0} role="region" aria-label="City list">
+            <table className="city-table">
+              <thead>
+                <tr>
+                  <th scope="col">City</th>
+                  <th scope="col">Now</th>
+                  <th scope="col">Low / High</th>
+                  <th scope="col">Precip.</th>
+                  <th scope="col">Fine dust</th>
+                </tr>
+              </thead>
+              <tbody>
+                {cities.map((c) => (
+                  <tr key={c.location.id}>
+                    <th scope="row">
+                      <button type="button" className="link-btn" onClick={() => open(c)}>
+                        {c.location.name}
+                      </button>
+                    </th>
+                    <td>
+                      <span className="city-table__now">
+                        <WeatherIcon condition={c.condition} size={24} />
+                        {formatTemp(c.temperature, 0, '°C')}
+                      </span>
+                    </td>
+                    <td>
+                      <span className="t-min">{formatTemp(c.temperatureMin, 0, '°C')}</span> / <span className="t-max">{formatTemp(c.temperatureMax, 0, '°C')}</span>
+                    </td>
+                    <td>{c.precipitationProbability}%</td>
+                    <td>{c.pm10Grade ? <GradeBadge grade={c.pm10Grade} size="sm" /> : <span className="muted">–</span>}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      )}
+    </div>
+  );
+}
