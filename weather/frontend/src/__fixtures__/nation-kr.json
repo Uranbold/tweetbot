@@ -1,0 +1,312 @@
+{
+  "data": {
+    "region": "kr",
+    "regionLabel": "South Korea",
+    "cities": [
+      {
+        "location": {
+          "id": "1835848",
+          "name": "Seoul",
+          "admin1": "Seoul",
+          "country": "South Korea",
+          "countryCode": "KR",
+          "lat": 37.57,
+          "lon": 126.98,
+          "timezone": "Asia/Seoul",
+          "utcOffsetSeconds": 32400,
+          "elevation": 38
+        },
+        "temperature": 22.4,
+        "condition": {
+          "code": 1,
+          "key": "mostly-clear",
+          "label": "Mainly clear",
+          "isDay": true
+        },
+        "precipitationProbability": 5,
+        "temperatureMin": 12.7,
+        "temperatureMax": 23.5,
+        "pm10Grade": "moderate"
+      },
+      {
+        "location": {
+          "id": "1843564",
+          "name": "Incheon",
+          "admin1": "Incheon",
+          "country": "South Korea",
+          "countryCode": "KR",
+          "lat": 37.46,
+          "lon": 126.71,
+          "timezone": "Asia/Seoul",
+          "utcOffsetSeconds": 32400,
+          "elevation": 10
+        },
+        "temperature": 21.6,
+        "condition": {
+          "code": 2,
+          "key": "partly-cloudy",
+          "label": "Partly cloudy",
+          "isDay": true
+        },
+        "precipitationProbability": 10,
+        "temperatureMin": 12.7,
+        "temperatureMax": 24.3,
+        "pm10Grade": "bad"
+      },
+      {
+        "location": {
+          "id": "1845136",
+          "name": "Chuncheon",
+          "admin1": "Gangwon",
+          "country": "South Korea",
+          "countryCode": "KR",
+          "lat": 37.87,
+          "lon": 127.73,
+          "timezone": "Asia/Seoul",
+          "utcOffsetSeconds": 32400,
+          "elevation": 77
+        },
+        "temperature": 20.8,
+        "condition": {
+          "code": 2,
+          "key": "partly-cloudy",
+          "label": "Partly cloudy",
+          "isDay": true
+        },
+        "precipitationProbability": 1,
+        "temperatureMin": 9.7,
+        "temperatureMax": 23.3,
+        "pm10Grade": "moderate"
+      },
+      {
+        "location": {
+          "id": "1843137",
+          "name": "Gangneung",
+          "admin1": "Gangwon",
+          "country": "South Korea",
+          "countryCode": "KR",
+          "lat": 37.75,
+          "lon": 128.9,
+          "timezone": "Asia/Seoul",
+          "utcOffsetSeconds": 32400,
+          "elevation": 26
+        },
+        "temperature": 19.9,
+        "condition": {
+          "code": 61,
+          "key": "rain",
+          "label": "Slight rain",
+          "isDay": true
+        },
+        "precipitationProbability": 80,
+        "temperatureMin": 11.5,
+        "temperatureMax": 21.7,
+        "pm10Grade": "moderate"
+      },
+      {
+        "location": {
+          "id": "1835235",
+          "name": "Daejeon",
+          "admin1": "Daejeon",
+          "country": "South Korea",
+          "countryCode": "KR",
+          "lat": 36.35,
+          "lon": 127.38,
+          "timezone": "Asia/Seoul",
+          "utcOffsetSeconds": 32400,
+          "elevation": 67
+        },
+        "temperature": 23.1,
+        "condition": {
+          "code": 1,
+          "key": "mostly-clear",
+          "label": "Mainly clear",
+          "isDay": true
+        },
+        "precipitationProbability": 8,
+        "temperatureMin": 13.3,
+        "temperatureMax": 24.7
+      },
+      {
+        "location": {
+          "id": "1845604",
+          "name": "Cheongju",
+          "admin1": "North Chungcheong",
+          "country": "South Korea",
+          "countryCode": "KR",
+          "lat": 36.64,
+          "lon": 127.49,
+          "timezone": "Asia/Seoul",
+          "utcOffsetSeconds": 32400,
+          "elevation": 58
+        },
+        "temperature": 22.8,
+        "condition": {
+          "code": 1,
+          "key": "mostly-clear",
+          "label": "Mainly clear",
+          "isDay": true
+        },
+        "precipitationProbability": 20,
+        "temperatureMin": 11.9,
+        "temperatureMax": 24.1,
+        "pm10Grade": "moderate"
+      },
+      {
+        "location": {
+          "id": "1845457",
+          "name": "Jeonju",
+          "admin1": "North Jeolla",
+          "country": "South Korea",
+          "countryCode": "KR",
+          "lat": 35.82,
+          "lon": 127.15,
+          "timezone": "Asia/Seoul",
+          "utcOffsetSeconds": 32400,
+          "elevation": 53
+        },
+        "temperature": 23.5,
+        "condition": {
+          "code": 2,
+          "key": "partly-cloudy",
+          "label": "Partly cloudy",
+          "isDay": true
+        },
+        "precipitationProbability": 2,
+        "temperatureMin": 11.9,
+        "temperatureMax": 25.5,
+        "pm10Grade": "moderate"
+      },
+      {
+        "location": {
+          "id": "1841811",
+          "name": "Gwangju",
+          "admin1": "Gwangju",
+          "country": "South Korea",
+          "countryCode": "KR",
+          "lat": 35.16,
+          "lon": 126.85,
+          "timezone": "Asia/Seoul",
+          "utcOffsetSeconds": 32400,
+          "elevation": 46
+        },
+        "temperature": 24,
+        "condition": {
+          "code": 3,
+          "key": "cloudy",
+          "label": "Overcast",
+          "isDay": true
+        },
+        "precipitationProbability": 14,
+        "temperatureMin": 12.3,
+        "temperatureMax": 26.7,
+        "pm10Grade": "moderate"
+      },
+      {
+        "location": {
+          "id": "1835329",
+          "name": "Daegu",
+          "admin1": "Daegu",
+          "country": "South Korea",
+          "countryCode": "KR",
+          "lat": 35.87,
+          "lon": 128.6,
+          "timezone": "Asia/Seoul",
+          "utcOffsetSeconds": 32400,
+          "elevation": 49
+        },
+        "temperature": 24.6,
+        "condition": {
+          "code": 0,
+          "key": "clear",
+          "label": "Clear sky",
+          "isDay": true
+        },
+        "precipitationProbability": 6,
+        "temperatureMin": 15,
+        "temperatureMax": 27,
+        "pm10Grade": "moderate"
+      },
+      {
+        "location": {
+          "id": "1838524",
+          "name": "Busan",
+          "admin1": "Busan",
+          "country": "South Korea",
+          "countryCode": "KR",
+          "lat": 35.1,
+          "lon": 129.04,
+          "timezone": "Asia/Seoul",
+          "utcOffsetSeconds": 32400,
+          "elevation": 15
+        },
+        "temperature": 24.2,
+        "condition": {
+          "code": 1,
+          "key": "mostly-clear",
+          "label": "Mainly clear",
+          "isDay": true
+        },
+        "precipitationProbability": 10,
+        "temperatureMin": 14.7,
+        "temperatureMax": 26
+      },
+      {
+        "location": {
+          "id": "1833747",
+          "name": "Ulsan",
+          "admin1": "Ulsan",
+          "country": "South Korea",
+          "countryCode": "KR",
+          "lat": 35.54,
+          "lon": 129.31,
+          "timezone": "Asia/Seoul",
+          "utcOffsetSeconds": 32400,
+          "elevation": 30
+        },
+        "temperature": 23.4,
+        "condition": {
+          "code": 2,
+          "key": "partly-cloudy",
+          "label": "Partly cloudy",
+          "isDay": true
+        },
+        "precipitationProbability": 17,
+        "temperatureMin": 15,
+        "temperatureMax": 24.8,
+        "pm10Grade": "good"
+      },
+      {
+        "location": {
+          "id": "1846266",
+          "name": "Jeju",
+          "admin1": "Jeju",
+          "country": "South Korea",
+          "countryCode": "KR",
+          "lat": 33.5,
+          "lon": 126.53,
+          "timezone": "Asia/Seoul",
+          "utcOffsetSeconds": 32400,
+          "elevation": 20
+        },
+        "temperature": 25.1,
+        "condition": {
+          "code": 61,
+          "key": "rain",
+          "label": "Slight rain",
+          "isDay": true
+        },
+        "precipitationProbability": 66,
+        "temperatureMin": 16.6,
+        "temperatureMax": 27.6,
+        "pm10Grade": "moderate"
+      }
+    ]
+  },
+  "meta": {
+    "provider": "fixture",
+    "fetchedAt": "2026-10-01T06:00:00Z",
+    "stale": false,
+    "mock": true
+  }
+}

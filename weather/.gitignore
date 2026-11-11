@@ -1,0 +1,21 @@
+# Node
+node_modules/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+# Expo
+.expo/
+web-build/
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.cache/
+.models/
+# misc
+.DS_Store
+*.log
+.env

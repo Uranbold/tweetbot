@@ -1,0 +1,1304 @@
+{
+  "data": {
+    "location": {
+      "id": "2028462",
+      "name": "Ulaanbaatar",
+      "admin1": "Ulaanbaatar",
+      "country": "Mongolia",
+      "countryCode": "MN",
+      "lat": 47.92,
+      "lon": 106.92,
+      "timezone": "Asia/Ulaanbaatar",
+      "utcOffsetSeconds": 28800,
+      "elevation": 1350
+    },
+    "current": {
+      "time": "2026-10-01T14:00",
+      "temperature": 11.4,
+      "feelsLike": 8.9,
+      "condition": {
+        "code": 1,
+        "key": "mostly-clear",
+        "label": "Mainly clear",
+        "isDay": true
+      },
+      "humidity": 34,
+      "windSpeed": 6.8,
+      "windGust": 11.2,
+      "windDirection": 305,
+      "windDirectionLabel": "NW",
+      "precipitation": 0,
+      "pressure": 1021,
+      "cloudCover": 18,
+      "visibility": 24,
+      "uvIndex": 3.1
+    },
+    "comparison": {
+      "temperatureDiff": 2.3,
+      "message": "2.3° warmer than yesterday"
+    },
+    "today": {
+      "temperatureMin": -1.6,
+      "temperatureMax": 12.1,
+      "sunrise": "2026-10-01T07:13",
+      "sunset": "2026-10-01T18:52",
+      "headline": "Mostly sunny and breezy, light rain likely tomorrow afternoon"
+    },
+    "hourly": [
+      {
+        "time": "2026-10-01T14:00",
+        "temperature": 11.7,
+        "feelsLike": 7.3,
+        "condition": {
+          "code": 1,
+          "key": "mostly-clear",
+          "label": "Mainly clear",
+          "isDay": true
+        },
+        "precipitationProbability": 12,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 37,
+        "windSpeed": 7.4,
+        "windDirection": 326,
+        "uvIndex": 3.5
+      },
+      {
+        "time": "2026-10-01T15:00",
+        "temperature": 11.8,
+        "feelsLike": 8,
+        "condition": {
+          "code": 1,
+          "key": "mostly-clear",
+          "label": "Mainly clear",
+          "isDay": true
+        },
+        "precipitationProbability": 11,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 38,
+        "windSpeed": 6.3,
+        "windDirection": 313,
+        "uvIndex": 3.1
+      },
+      {
+        "time": "2026-10-01T16:00",
+        "temperature": 11.8,
+        "feelsLike": 6.3,
+        "condition": {
+          "code": 1,
+          "key": "mostly-clear",
+          "label": "Mainly clear",
+          "isDay": true
+        },
+        "precipitationProbability": 2,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 47,
+        "windSpeed": 9.2,
+        "windDirection": 293,
+        "uvIndex": 2.5
+      },
+      {
+        "time": "2026-10-01T17:00",
+        "temperature": 10.9,
+        "feelsLike": 6.5,
+        "condition": {
+          "code": 1,
+          "key": "mostly-clear",
+          "label": "Mainly clear",
+          "isDay": true
+        },
+        "precipitationProbability": 13,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 40,
+        "windSpeed": 7.4,
+        "windDirection": 324,
+        "uvIndex": 1.8
+      },
+      {
+        "time": "2026-10-01T18:00",
+        "temperature": 9.9,
+        "feelsLike": 5.9,
+        "condition": {
+          "code": 1,
+          "key": "mostly-clear",
+          "label": "Mainly clear",
+          "isDay": true
+        },
+        "precipitationProbability": 10,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 50,
+        "windSpeed": 6.7,
+        "windDirection": 304,
+        "uvIndex": 0.9
+      },
+      {
+        "time": "2026-10-01T19:00",
+        "temperature": 8,
+        "feelsLike": 2.4,
+        "condition": {
+          "code": 2,
+          "key": "partly-cloudy",
+          "label": "Partly cloudy",
+          "isDay": false
+        },
+        "precipitationProbability": 8,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 58,
+        "windSpeed": 9.3,
+        "windDirection": 298,
+        "uvIndex": 0
+      },
+      {
+        "time": "2026-10-01T20:00",
+        "temperature": 6.6,
+        "feelsLike": 2.3,
+        "condition": {
+          "code": 2,
+          "key": "partly-cloudy",
+          "label": "Partly cloudy",
+          "isDay": false
+        },
+        "precipitationProbability": 4,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 57,
+        "windSpeed": 7.2,
+        "windDirection": 313,
+        "uvIndex": 0
+      },
+      {
+        "time": "2026-10-01T21:00",
+        "temperature": 4.8,
+        "feelsLike": 1,
+        "condition": {
+          "code": 2,
+          "key": "partly-cloudy",
+          "label": "Partly cloudy",
+          "isDay": false
+        },
+        "precipitationProbability": 9,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 53,
+        "windSpeed": 6.4,
+        "windDirection": 291,
+        "uvIndex": 0
+      },
+      {
+        "time": "2026-10-01T22:00",
+        "temperature": 2.7,
+        "feelsLike": 0.6,
+        "condition": {
+          "code": 2,
+          "key": "partly-cloudy",
+          "label": "Partly cloudy",
+          "isDay": false
+        },
+        "precipitationProbability": 11,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 67,
+        "windSpeed": 3.5,
+        "windDirection": 330,
+        "uvIndex": 0
+      },
+      {
+        "time": "2026-10-01T23:00",
+        "temperature": 0.7,
+        "feelsLike": -1.7,
+        "condition": {
+          "code": 2,
+          "key": "partly-cloudy",
+          "label": "Partly cloudy",
+          "isDay": false
+        },
+        "precipitationProbability": 14,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 50,
+        "windSpeed": 4,
+        "windDirection": 291,
+        "uvIndex": 0
+      },
+      {
+        "time": "2026-10-02T00:00",
+        "temperature": -1.4,
+        "feelsLike": -5.1,
+        "condition": {
+          "code": 2,
+          "key": "partly-cloudy",
+          "label": "Partly cloudy",
+          "isDay": false
+        },
+        "precipitationProbability": 5,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 49,
+        "windSpeed": 6.1,
+        "windDirection": 330,
+        "uvIndex": 0
+      },
+      {
+        "time": "2026-10-02T01:00",
+        "temperature": -3.1,
+        "feelsLike": -6.6,
+        "condition": {
+          "code": 2,
+          "key": "partly-cloudy",
+          "label": "Partly cloudy",
+          "isDay": false
+        },
+        "precipitationProbability": 0,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 67,
+        "windSpeed": 5.9,
+        "windDirection": 315,
+        "uvIndex": 0
+      },
+      {
+        "time": "2026-10-02T02:00",
+        "temperature": -3.4,
+        "feelsLike": -7.5,
+        "condition": {
+          "code": 0,
+          "key": "clear",
+          "label": "Clear sky",
+          "isDay": false
+        },
+        "precipitationProbability": 7,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 66,
+        "windSpeed": 6.8,
+        "windDirection": 297,
+        "uvIndex": 0
+      },
+      {
+        "time": "2026-10-02T03:00",
+        "temperature": -3.8,
+        "feelsLike": -7.5,
+        "condition": {
+          "code": 0,
+          "key": "clear",
+          "label": "Clear sky",
+          "isDay": false
+        },
+        "precipitationProbability": 3,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 67,
+        "windSpeed": 6.1,
+        "windDirection": 316,
+        "uvIndex": 0
+      },
+      {
+        "time": "2026-10-02T04:00",
+        "temperature": -3.8,
+        "feelsLike": -7.8,
+        "condition": {
+          "code": 0,
+          "key": "clear",
+          "label": "Clear sky",
+          "isDay": false
+        },
+        "precipitationProbability": 9,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 58,
+        "windSpeed": 6.7,
+        "windDirection": 297,
+        "uvIndex": 0
+      },
+      {
+        "time": "2026-10-02T05:00",
+        "temperature": -2.6,
+        "feelsLike": -4.9,
+        "condition": {
+          "code": 0,
+          "key": "clear",
+          "label": "Clear sky",
+          "isDay": false
+        },
+        "precipitationProbability": 3,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 68,
+        "windSpeed": 3.9,
+        "windDirection": 317,
+        "uvIndex": 0
+      },
+      {
+        "time": "2026-10-02T06:00",
+        "temperature": -1.4,
+        "feelsLike": -5.5,
+        "condition": {
+          "code": 0,
+          "key": "clear",
+          "label": "Clear sky",
+          "isDay": false
+        },
+        "precipitationProbability": 9,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 61,
+        "windSpeed": 6.8,
+        "windDirection": 298,
+        "uvIndex": 0
+      },
+      {
+        "time": "2026-10-02T07:00",
+        "temperature": -0.3,
+        "feelsLike": -2.3,
+        "condition": {
+          "code": 0,
+          "key": "clear",
+          "label": "Clear sky",
+          "isDay": true
+        },
+        "precipitationProbability": 11,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 42,
+        "windSpeed": 3.3,
+        "windDirection": 314,
+        "uvIndex": 0
+      },
+      {
+        "time": "2026-10-02T08:00",
+        "temperature": 1.9,
+        "feelsLike": 0,
+        "condition": {
+          "code": 0,
+          "key": "clear",
+          "label": "Clear sky",
+          "isDay": true
+        },
+        "precipitationProbability": 8,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 35,
+        "windSpeed": 3.1,
+        "windDirection": 300,
+        "uvIndex": 0.9
+      },
+      {
+        "time": "2026-10-02T09:00",
+        "temperature": 4,
+        "feelsLike": 1.4,
+        "condition": {
+          "code": 0,
+          "key": "clear",
+          "label": "Clear sky",
+          "isDay": true
+        },
+        "precipitationProbability": 1,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 34,
+        "windSpeed": 4.4,
+        "windDirection": 310,
+        "uvIndex": 1.8
+      },
+      {
+        "time": "2026-10-02T10:00",
+        "temperature": 5.9,
+        "feelsLike": 3.4,
+        "condition": {
+          "code": 3,
+          "key": "cloudy",
+          "label": "Overcast",
+          "isDay": true
+        },
+        "precipitationProbability": 2,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 54,
+        "windSpeed": 4.2,
+        "windDirection": 297,
+        "uvIndex": 2.5
+      },
+      {
+        "time": "2026-10-02T11:00",
+        "temperature": 7.5,
+        "feelsLike": 4.4,
+        "condition": {
+          "code": 3,
+          "key": "cloudy",
+          "label": "Overcast",
+          "isDay": true
+        },
+        "precipitationProbability": 4,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 41,
+        "windSpeed": 5.2,
+        "windDirection": 316,
+        "uvIndex": 3.1
+      },
+      {
+        "time": "2026-10-02T12:00",
+        "temperature": 8.9,
+        "feelsLike": 6.4,
+        "condition": {
+          "code": 3,
+          "key": "cloudy",
+          "label": "Overcast",
+          "isDay": true
+        },
+        "precipitationProbability": 3,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 48,
+        "windSpeed": 4.2,
+        "windDirection": 320,
+        "uvIndex": 3.5
+      },
+      {
+        "time": "2026-10-02T13:00",
+        "temperature": 10.3,
+        "feelsLike": 7.8,
+        "condition": {
+          "code": 3,
+          "key": "cloudy",
+          "label": "Overcast",
+          "isDay": true
+        },
+        "precipitationProbability": 14,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 53,
+        "windSpeed": 4.2,
+        "windDirection": 296,
+        "uvIndex": 3.6
+      },
+      {
+        "time": "2026-10-02T14:00",
+        "temperature": 11.2,
+        "feelsLike": 8.8,
+        "condition": {
+          "code": 3,
+          "key": "cloudy",
+          "label": "Overcast",
+          "isDay": true
+        },
+        "precipitationProbability": 8,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 37,
+        "windSpeed": 4,
+        "windDirection": 293,
+        "uvIndex": 3.5
+      },
+      {
+        "time": "2026-10-02T15:00",
+        "temperature": 10.9,
+        "feelsLike": 7.8,
+        "condition": {
+          "code": 3,
+          "key": "cloudy",
+          "label": "Overcast",
+          "isDay": true
+        },
+        "precipitationProbability": 5,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 32,
+        "windSpeed": 5.1,
+        "windDirection": 299,
+        "uvIndex": 3.1
+      },
+      {
+        "time": "2026-10-02T16:00",
+        "temperature": 11.1,
+        "feelsLike": 9.2,
+        "condition": {
+          "code": 51,
+          "key": "drizzle",
+          "label": "Light drizzle",
+          "isDay": true
+        },
+        "precipitationProbability": 62,
+        "precipitation": 0.6,
+        "snowfall": 0,
+        "humidity": 77,
+        "windSpeed": 3.2,
+        "windDirection": 309,
+        "uvIndex": 2.5
+      },
+      {
+        "time": "2026-10-02T17:00",
+        "temperature": 10.1,
+        "feelsLike": 6.4,
+        "condition": {
+          "code": 51,
+          "key": "drizzle",
+          "label": "Light drizzle",
+          "isDay": true
+        },
+        "precipitationProbability": 58,
+        "precipitation": 0.3,
+        "snowfall": 0,
+        "humidity": 95,
+        "windSpeed": 6.1,
+        "windDirection": 325,
+        "uvIndex": 1.8
+      },
+      {
+        "time": "2026-10-02T18:00",
+        "temperature": 8.9,
+        "feelsLike": 7,
+        "condition": {
+          "code": 51,
+          "key": "drizzle",
+          "label": "Light drizzle",
+          "isDay": true
+        },
+        "precipitationProbability": 68,
+        "precipitation": 0.4,
+        "snowfall": 0,
+        "humidity": 88,
+        "windSpeed": 3.1,
+        "windDirection": 307,
+        "uvIndex": 0.9
+      },
+      {
+        "time": "2026-10-02T19:00",
+        "temperature": 7.2,
+        "feelsLike": 4.3,
+        "condition": {
+          "code": 61,
+          "key": "rain",
+          "label": "Slight rain",
+          "isDay": false
+        },
+        "precipitationProbability": 86,
+        "precipitation": 1,
+        "snowfall": 0,
+        "humidity": 93,
+        "windSpeed": 4.9,
+        "windDirection": 327,
+        "uvIndex": 0
+      },
+      {
+        "time": "2026-10-02T20:00",
+        "temperature": 5.6,
+        "feelsLike": 3.4,
+        "condition": {
+          "code": 61,
+          "key": "rain",
+          "label": "Slight rain",
+          "isDay": false
+        },
+        "precipitationProbability": 70,
+        "precipitation": 1.2,
+        "snowfall": 0,
+        "humidity": 89,
+        "windSpeed": 3.6,
+        "windDirection": 299,
+        "uvIndex": 0
+      },
+      {
+        "time": "2026-10-02T21:00",
+        "temperature": 3.8,
+        "feelsLike": 0.3,
+        "condition": {
+          "code": 61,
+          "key": "rain",
+          "label": "Slight rain",
+          "isDay": false
+        },
+        "precipitationProbability": 78,
+        "precipitation": 1.8,
+        "snowfall": 0,
+        "humidity": 81,
+        "windSpeed": 5.8,
+        "windDirection": 290,
+        "uvIndex": 0
+      },
+      {
+        "time": "2026-10-02T22:00",
+        "temperature": 2,
+        "feelsLike": -1.8,
+        "condition": {
+          "code": 51,
+          "key": "drizzle",
+          "label": "Light drizzle",
+          "isDay": false
+        },
+        "precipitationProbability": 67,
+        "precipitation": 0.8,
+        "snowfall": 0,
+        "humidity": 79,
+        "windSpeed": 6.3,
+        "windDirection": 318,
+        "uvIndex": 0
+      },
+      {
+        "time": "2026-10-02T23:00",
+        "temperature": -0.3,
+        "feelsLike": -4.4,
+        "condition": {
+          "code": 51,
+          "key": "drizzle",
+          "label": "Light drizzle",
+          "isDay": false
+        },
+        "precipitationProbability": 68,
+        "precipitation": 0.4,
+        "snowfall": 0,
+        "humidity": 90,
+        "windSpeed": 6.8,
+        "windDirection": 295,
+        "uvIndex": 0
+      },
+      {
+        "time": "2026-10-03T00:00",
+        "temperature": -2.2,
+        "feelsLike": -5.1,
+        "condition": {
+          "code": 3,
+          "key": "cloudy",
+          "label": "Overcast",
+          "isDay": false
+        },
+        "precipitationProbability": 4,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 53,
+        "windSpeed": 4.9,
+        "windDirection": 329,
+        "uvIndex": 0
+      },
+      {
+        "time": "2026-10-03T01:00",
+        "temperature": -3.7,
+        "feelsLike": -5.6,
+        "condition": {
+          "code": 3,
+          "key": "cloudy",
+          "label": "Overcast",
+          "isDay": false
+        },
+        "precipitationProbability": 15,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 65,
+        "windSpeed": 3.1,
+        "windDirection": 310,
+        "uvIndex": 0
+      },
+      {
+        "time": "2026-10-03T02:00",
+        "temperature": -4.2,
+        "feelsLike": -8,
+        "condition": {
+          "code": 3,
+          "key": "cloudy",
+          "label": "Overcast",
+          "isDay": false
+        },
+        "precipitationProbability": 15,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 47,
+        "windSpeed": 6.3,
+        "windDirection": 323,
+        "uvIndex": 0
+      },
+      {
+        "time": "2026-10-03T03:00",
+        "temperature": -4.7,
+        "feelsLike": -7.4,
+        "condition": {
+          "code": 3,
+          "key": "cloudy",
+          "label": "Overcast",
+          "isDay": false
+        },
+        "precipitationProbability": 13,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 59,
+        "windSpeed": 4.5,
+        "windDirection": 292,
+        "uvIndex": 0
+      },
+      {
+        "time": "2026-10-03T04:00",
+        "temperature": -4.1,
+        "feelsLike": -6.3,
+        "condition": {
+          "code": 3,
+          "key": "cloudy",
+          "label": "Overcast",
+          "isDay": false
+        },
+        "precipitationProbability": 10,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 61,
+        "windSpeed": 3.7,
+        "windDirection": 300,
+        "uvIndex": 0
+      },
+      {
+        "time": "2026-10-03T05:00",
+        "temperature": -3.4,
+        "feelsLike": -7.4,
+        "condition": {
+          "code": 3,
+          "key": "cloudy",
+          "label": "Overcast",
+          "isDay": false
+        },
+        "precipitationProbability": 8,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 56,
+        "windSpeed": 6.7,
+        "windDirection": 306,
+        "uvIndex": 0
+      },
+      {
+        "time": "2026-10-03T06:00",
+        "temperature": -2.5,
+        "feelsLike": -6.7,
+        "condition": {
+          "code": 3,
+          "key": "cloudy",
+          "label": "Overcast",
+          "isDay": false
+        },
+        "precipitationProbability": 0,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 64,
+        "windSpeed": 7,
+        "windDirection": 329,
+        "uvIndex": 0
+      },
+      {
+        "time": "2026-10-03T07:00",
+        "temperature": -0.9,
+        "feelsLike": -3.7,
+        "condition": {
+          "code": 3,
+          "key": "cloudy",
+          "label": "Overcast",
+          "isDay": true
+        },
+        "precipitationProbability": 0,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 39,
+        "windSpeed": 4.7,
+        "windDirection": 307,
+        "uvIndex": 0
+      },
+      {
+        "time": "2026-10-03T08:00",
+        "temperature": 0.8,
+        "feelsLike": -1.8,
+        "condition": {
+          "code": 3,
+          "key": "cloudy",
+          "label": "Overcast",
+          "isDay": true
+        },
+        "precipitationProbability": 6,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 49,
+        "windSpeed": 4.3,
+        "windDirection": 320,
+        "uvIndex": 0.9
+      },
+      {
+        "time": "2026-10-03T09:00",
+        "temperature": 3.1,
+        "feelsLike": -0.7,
+        "condition": {
+          "code": 3,
+          "key": "cloudy",
+          "label": "Overcast",
+          "isDay": true
+        },
+        "precipitationProbability": 3,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 40,
+        "windSpeed": 6.4,
+        "windDirection": 316,
+        "uvIndex": 1.8
+      },
+      {
+        "time": "2026-10-03T10:00",
+        "temperature": 4.6,
+        "feelsLike": 1.3,
+        "condition": {
+          "code": 3,
+          "key": "cloudy",
+          "label": "Overcast",
+          "isDay": true
+        },
+        "precipitationProbability": 13,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 44,
+        "windSpeed": 5.5,
+        "windDirection": 313,
+        "uvIndex": 2.5
+      },
+      {
+        "time": "2026-10-03T11:00",
+        "temperature": 6.8,
+        "feelsLike": 2.9,
+        "condition": {
+          "code": 3,
+          "key": "cloudy",
+          "label": "Overcast",
+          "isDay": true
+        },
+        "precipitationProbability": 1,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 37,
+        "windSpeed": 6.5,
+        "windDirection": 301,
+        "uvIndex": 3.1
+      },
+      {
+        "time": "2026-10-03T12:00",
+        "temperature": 8.1,
+        "feelsLike": 5.4,
+        "condition": {
+          "code": 3,
+          "key": "cloudy",
+          "label": "Overcast",
+          "isDay": true
+        },
+        "precipitationProbability": 8,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 33,
+        "windSpeed": 4.5,
+        "windDirection": 297,
+        "uvIndex": 3.5
+      },
+      {
+        "time": "2026-10-03T13:00",
+        "temperature": 9.7,
+        "feelsLike": 6.5,
+        "condition": {
+          "code": 3,
+          "key": "cloudy",
+          "label": "Overcast",
+          "isDay": true
+        },
+        "precipitationProbability": 4,
+        "precipitation": 0,
+        "snowfall": 0,
+        "humidity": 31,
+        "windSpeed": 5.4,
+        "windDirection": 293,
+        "uvIndex": 3.6
+      }
+    ],
+    "daily": [
+      {
+        "date": "2026-10-01",
+        "temperatureMin": -1.6,
+        "temperatureMax": 12.1,
+        "am": {
+          "condition": {
+            "code": 1,
+            "key": "mostly-clear",
+            "label": "Mainly clear",
+            "isDay": true
+          },
+          "precipitationProbability": 10
+        },
+        "pm": {
+          "condition": {
+            "code": 2,
+            "key": "partly-cloudy",
+            "label": "Partly cloudy",
+            "isDay": true
+          },
+          "precipitationProbability": 13
+        },
+        "precipitationSum": 0,
+        "snowfallSum": 0,
+        "sunrise": "2026-10-01T07:13",
+        "sunset": "2026-10-01T18:52",
+        "uvIndexMax": 3.8,
+        "windSpeedMax": 9.9
+      },
+      {
+        "date": "2026-10-02",
+        "temperatureMin": -0.4,
+        "temperatureMax": 8.4,
+        "am": {
+          "condition": {
+            "code": 51,
+            "key": "drizzle",
+            "label": "Light drizzle",
+            "isDay": true
+          },
+          "precipitationProbability": 60
+        },
+        "pm": {
+          "condition": {
+            "code": 61,
+            "key": "rain",
+            "label": "Slight rain",
+            "isDay": true
+          },
+          "precipitationProbability": 70
+        },
+        "precipitationSum": 4,
+        "snowfallSum": 0,
+        "sunrise": "2026-10-02T07:14",
+        "sunset": "2026-10-02T18:50",
+        "uvIndexMax": 3.7,
+        "windSpeedMax": 7.2
+      },
+      {
+        "date": "2026-10-03",
+        "temperatureMin": -3.2,
+        "temperatureMax": 9.7,
+        "am": {
+          "condition": {
+            "code": 3,
+            "key": "cloudy",
+            "label": "Overcast",
+            "isDay": true
+          },
+          "precipitationProbability": 6
+        },
+        "pm": {
+          "condition": {
+            "code": 2,
+            "key": "partly-cloudy",
+            "label": "Partly cloudy",
+            "isDay": true
+          },
+          "precipitationProbability": 4
+        },
+        "precipitationSum": 0,
+        "snowfallSum": 0,
+        "sunrise": "2026-10-03T07:15",
+        "sunset": "2026-10-03T18:48",
+        "uvIndexMax": 3.6,
+        "windSpeedMax": 10
+      },
+      {
+        "date": "2026-10-04",
+        "temperatureMin": -2.1,
+        "temperatureMax": 11.9,
+        "am": {
+          "condition": {
+            "code": 0,
+            "key": "clear",
+            "label": "Clear sky",
+            "isDay": true
+          },
+          "precipitationProbability": 8
+        },
+        "pm": {
+          "condition": {
+            "code": 1,
+            "key": "mostly-clear",
+            "label": "Mainly clear",
+            "isDay": true
+          },
+          "precipitationProbability": 19
+        },
+        "precipitationSum": 0,
+        "snowfallSum": 0,
+        "sunrise": "2026-10-04T07:16",
+        "sunset": "2026-10-04T18:46",
+        "uvIndexMax": 3.5,
+        "windSpeedMax": 9.5
+      },
+      {
+        "date": "2026-10-05",
+        "temperatureMin": -4.8,
+        "temperatureMax": 6.2,
+        "am": {
+          "condition": {
+            "code": 1,
+            "key": "mostly-clear",
+            "label": "Mainly clear",
+            "isDay": true
+          },
+          "precipitationProbability": 16
+        },
+        "pm": {
+          "condition": {
+            "code": 71,
+            "key": "snow",
+            "label": "Slight snow",
+            "isDay": true
+          },
+          "precipitationProbability": 70
+        },
+        "precipitationSum": 2.3,
+        "snowfallSum": 2.4,
+        "sunrise": "2026-10-05T07:17",
+        "sunset": "2026-10-05T18:44",
+        "uvIndexMax": 3.4,
+        "windSpeedMax": 6.5
+      },
+      {
+        "date": "2026-10-06",
+        "temperatureMin": -8.9,
+        "temperatureMax": 1.8,
+        "am": {
+          "condition": {
+            "code": 71,
+            "key": "snow",
+            "label": "Slight snow",
+            "isDay": true
+          },
+          "precipitationProbability": 60
+        },
+        "pm": {
+          "condition": {
+            "code": 3,
+            "key": "cloudy",
+            "label": "Overcast",
+            "isDay": true
+          },
+          "precipitationProbability": 19
+        },
+        "precipitationSum": 2.5,
+        "snowfallSum": 1.6,
+        "sunrise": "2026-10-06T07:18",
+        "sunset": "2026-10-06T18:42",
+        "uvIndexMax": 3.3,
+        "windSpeedMax": 7
+      },
+      {
+        "date": "2026-10-07",
+        "temperatureMin": -7.3,
+        "temperatureMax": 5.5,
+        "am": {
+          "condition": {
+            "code": 2,
+            "key": "partly-cloudy",
+            "label": "Partly cloudy",
+            "isDay": true
+          },
+          "precipitationProbability": 16
+        },
+        "pm": {
+          "condition": {
+            "code": 0,
+            "key": "clear",
+            "label": "Clear sky",
+            "isDay": true
+          },
+          "precipitationProbability": 18
+        },
+        "precipitationSum": 0,
+        "snowfallSum": 0,
+        "sunrise": "2026-10-07T07:19",
+        "sunset": "2026-10-07T18:40",
+        "uvIndexMax": 3.2,
+        "windSpeedMax": 8.2
+      },
+      {
+        "date": "2026-10-08",
+        "temperatureMin": -4.4,
+        "temperatureMax": 8.8,
+        "am": {
+          "condition": {
+            "code": 0,
+            "key": "clear",
+            "label": "Clear sky",
+            "isDay": true
+          },
+          "precipitationProbability": 4
+        },
+        "pm": {
+          "condition": {
+            "code": 0,
+            "key": "clear",
+            "label": "Clear sky",
+            "isDay": true
+          },
+          "precipitationProbability": 1
+        },
+        "precipitationSum": 0,
+        "snowfallSum": 0,
+        "sunrise": "2026-10-08T07:20",
+        "sunset": "2026-10-08T18:38",
+        "uvIndexMax": 3.1,
+        "windSpeedMax": 10.3
+      },
+      {
+        "date": "2026-10-09",
+        "temperatureMin": -5.6,
+        "temperatureMax": 7.1,
+        "am": {
+          "condition": {
+            "code": 2,
+            "key": "partly-cloudy",
+            "label": "Partly cloudy",
+            "isDay": true
+          },
+          "precipitationProbability": 14
+        },
+        "pm": {
+          "condition": {
+            "code": 3,
+            "key": "cloudy",
+            "label": "Overcast",
+            "isDay": true
+          },
+          "precipitationProbability": 9
+        },
+        "precipitationSum": 0,
+        "snowfallSum": 0,
+        "sunrise": "2026-10-09T07:21",
+        "sunset": "2026-10-09T18:36",
+        "uvIndexMax": 3,
+        "windSpeedMax": 8.5
+      },
+      {
+        "date": "2026-10-10",
+        "temperatureMin": -7.9,
+        "temperatureMax": 4.3,
+        "am": {
+          "condition": {
+            "code": 1,
+            "key": "mostly-clear",
+            "label": "Mainly clear",
+            "isDay": true
+          },
+          "precipitationProbability": 18
+        },
+        "pm": {
+          "condition": {
+            "code": 2,
+            "key": "partly-cloudy",
+            "label": "Partly cloudy",
+            "isDay": true
+          },
+          "precipitationProbability": 4
+        },
+        "precipitationSum": 0,
+        "snowfallSum": 0,
+        "sunrise": "2026-10-10T07:22",
+        "sunset": "2026-10-10T18:34",
+        "uvIndexMax": 2.9,
+        "windSpeedMax": 6.9
+      }
+    ],
+    "air": {
+      "time": "2026-10-01T14:00",
+      "pm10": 46,
+      "pm25": 23,
+      "o3": 62,
+      "no2": 28,
+      "so2": 6,
+      "co": 410,
+      "pm10Grade": "moderate",
+      "pm25Grade": "moderate",
+      "overallGrade": "moderate",
+      "usAqi": 74
+    },
+    "lifeIndices": [
+      {
+        "key": "uv",
+        "label": "UV index",
+        "level": "moderate",
+        "value": 3.6,
+        "advice": "Wear sunglasses around midday"
+      },
+      {
+        "key": "laundry",
+        "label": "Laundry",
+        "level": "very-high",
+        "value": 88,
+        "advice": "Great day for laundry — dry and windy"
+      },
+      {
+        "key": "car-wash",
+        "label": "Car wash",
+        "level": "low",
+        "value": 30,
+        "advice": "Rain expected tomorrow, wait a day"
+      },
+      {
+        "key": "clothing",
+        "label": "Clothing",
+        "level": "moderate",
+        "value": 11,
+        "advice": "Light jacket over long sleeves"
+      },
+      {
+        "key": "outdoor-activity",
+        "label": "Outdoor activity",
+        "level": "high",
+        "value": 72,
+        "advice": "Good for a walk, mind the wind"
+      },
+      {
+        "key": "food-poisoning",
+        "label": "Food poisoning",
+        "level": "very-low",
+        "value": 12,
+        "advice": "Low risk in cool weather"
+      },
+      {
+        "key": "heat-index",
+        "label": "Heat index",
+        "level": "very-low",
+        "value": 10,
+        "advice": "No heat stress expected"
+      },
+      {
+        "key": "wind-chill",
+        "label": "Wind chill",
+        "level": "low",
+        "value": 8.9,
+        "advice": "Feels cooler in the wind, cover up tonight"
+      }
+    ],
+    "alerts": [
+      {
+        "type": "strong-wind",
+        "severity": "advisory",
+        "title": "Strong wind advisory",
+        "description": "Gusts above 10 m/s expected until this evening.",
+        "start": "2026-10-01T12:00",
+        "end": "2026-10-01T21:00",
+        "source": "derived"
+      }
+    ],
+    "clothing": {
+      "summary": "Light jacket, long sleeves",
+      "items": [
+        "Light jacket",
+        "Long-sleeve shirt",
+        "Jeans",
+        "Sneakers",
+        "Scarf for the evening"
+      ]
+    }
+  },
+  "meta": {
+    "provider": "fixture",
+    "fetchedAt": "2026-10-01T06:00:00Z",
+    "stale": false,
+    "mock": true
+  }
+}

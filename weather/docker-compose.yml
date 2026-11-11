@@ -1,0 +1,45 @@
+services:
+  ai:
+    build: ./ai
+    environment:
+      PORT: "8790"
+      DATA_MODE: "${DATA_MODE:-auto}"
+    ports:
+      - "8790:8790"
+    volumes:
+      - ai-models:/app/.models
+      - ai-cache:/app/.cache
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    environment:
+      PORT: "8787"
+      PROVIDER_MODE: "${PROVIDER_MODE:-auto}"
+      AI_SERVICE_URL: "http://ai:8790"
+      PUSH_MODE: "${PUSH_MODE:-log}"       # log | expo
+      DISPATCH_ENABLED: "true"
+      DISPATCH_INTERVAL_MS: "600000"
+      CORS_ORIGIN: "http://localhost:8080"
+    ports:
+      - "8787:8787"
+    depends_on:
+      - ai
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8787/api/v1/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  ai-models:
+  ai-cache:

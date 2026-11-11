@@ -1,0 +1,362 @@
+{
+  "data": {
+    "region": "mn",
+    "regionLabel": "Mongolia",
+    "cities": [
+      {
+        "location": {
+          "id": "2028462",
+          "name": "Ulaanbaatar",
+          "admin1": "Ulaanbaatar",
+          "country": "Mongolia",
+          "countryCode": "MN",
+          "lat": 47.92,
+          "lon": 106.92,
+          "timezone": "Asia/Ulaanbaatar",
+          "utcOffsetSeconds": 28800,
+          "elevation": 1350
+        },
+        "temperature": 11.4,
+        "condition": {
+          "code": 2,
+          "key": "partly-cloudy",
+          "label": "Partly cloudy",
+          "isDay": true
+        },
+        "precipitationProbability": 3,
+        "temperatureMin": 2.8,
+        "temperatureMax": 12.7,
+        "pm10Grade": "moderate"
+      },
+      {
+        "location": {
+          "id": "2031964",
+          "name": "Erdenet",
+          "admin1": "Orkhon",
+          "country": "Mongolia",
+          "countryCode": "MN",
+          "lat": 49.03,
+          "lon": 104.08,
+          "timezone": "Asia/Ulaanbaatar",
+          "utcOffsetSeconds": 28800,
+          "elevation": 1300
+        },
+        "temperature": 9.8,
+        "condition": {
+          "code": 1,
+          "key": "mostly-clear",
+          "label": "Mainly clear",
+          "isDay": true
+        },
+        "precipitationProbability": 18,
+        "temperatureMin": 0.8,
+        "temperatureMax": 11.1,
+        "pm10Grade": "bad"
+      },
+      {
+        "location": {
+          "id": "2032201",
+          "name": "Darkhan",
+          "admin1": "Darkhan-Uul",
+          "country": "Mongolia",
+          "countryCode": "MN",
+          "lat": 49.49,
+          "lon": 105.92,
+          "timezone": "Asia/Ulaanbaatar",
+          "utcOffsetSeconds": 28800,
+          "elevation": 707
+        },
+        "temperature": 10.9,
+        "condition": {
+          "code": 3,
+          "key": "cloudy",
+          "label": "Overcast",
+          "isDay": true
+        },
+        "precipitationProbability": 11,
+        "temperatureMin": 0,
+        "temperatureMax": 13.7,
+        "pm10Grade": "moderate"
+      },
+      {
+        "location": {
+          "id": "2032614",
+          "name": "Choibalsan",
+          "admin1": "Dornod",
+          "country": "Mongolia",
+          "countryCode": "MN",
+          "lat": 48.07,
+          "lon": 114.53,
+          "timezone": "Asia/Choibalsan",
+          "utcOffsetSeconds": 28800,
+          "elevation": 747
+        },
+        "temperature": 12.6,
+        "condition": {
+          "code": 0,
+          "key": "clear",
+          "label": "Clear sky",
+          "isDay": true
+        },
+        "precipitationProbability": 13,
+        "temperatureMin": 4.3,
+        "temperatureMax": 15.2,
+        "pm10Grade": "moderate"
+      },
+      {
+        "location": {
+          "id": "2030065",
+          "name": "Mörön",
+          "admin1": "Khövsgöl",
+          "country": "Mongolia",
+          "countryCode": "MN",
+          "lat": 49.64,
+          "lon": 100.16,
+          "timezone": "Asia/Ulaanbaatar",
+          "utcOffsetSeconds": 28800,
+          "elevation": 1283
+        },
+        "temperature": 6.2,
+        "condition": {
+          "code": 61,
+          "key": "rain",
+          "label": "Slight rain",
+          "isDay": true
+        },
+        "precipitationProbability": 69,
+        "temperatureMin": -3.3,
+        "temperatureMax": 8.2
+      },
+      {
+        "location": {
+          "id": "1516048",
+          "name": "Khovd",
+          "admin1": "Khovd",
+          "country": "Mongolia",
+          "countryCode": "MN",
+          "lat": 48.01,
+          "lon": 91.64,
+          "timezone": "Asia/Hovd",
+          "utcOffsetSeconds": 25200,
+          "elevation": 1405
+        },
+        "temperature": 8.1,
+        "condition": {
+          "code": 1,
+          "key": "mostly-clear",
+          "label": "Mainly clear",
+          "isDay": true
+        },
+        "precipitationProbability": 17,
+        "temperatureMin": -0.4,
+        "temperatureMax": 10.9,
+        "pm10Grade": "bad"
+      },
+      {
+        "location": {
+          "id": "1515029",
+          "name": "Ölgii",
+          "admin1": "Bayan-Ölgii",
+          "country": "Mongolia",
+          "countryCode": "MN",
+          "lat": 48.97,
+          "lon": 89.96,
+          "timezone": "Asia/Hovd",
+          "utcOffsetSeconds": 25200,
+          "elevation": 1715
+        },
+        "temperature": 4.7,
+        "condition": {
+          "code": 71,
+          "key": "snow",
+          "label": "Slight snow",
+          "isDay": true
+        },
+        "precipitationProbability": 81,
+        "temperatureMin": -7.2,
+        "temperatureMax": 7.6,
+        "pm10Grade": "good"
+      },
+      {
+        "location": {
+          "id": "2032855",
+          "name": "Bayankhongor",
+          "admin1": "Bayankhongor",
+          "country": "Mongolia",
+          "countryCode": "MN",
+          "lat": 46.19,
+          "lon": 100.72,
+          "timezone": "Asia/Ulaanbaatar",
+          "utcOffsetSeconds": 28800,
+          "elevation": 1859
+        },
+        "temperature": 8.9,
+        "condition": {
+          "code": 2,
+          "key": "partly-cloudy",
+          "label": "Partly cloudy",
+          "isDay": true
+        },
+        "precipitationProbability": 7,
+        "temperatureMin": 0.7,
+        "temperatureMax": 11.8,
+        "pm10Grade": "moderate"
+      },
+      {
+        "location": {
+          "id": "2031405",
+          "name": "Dalanzadgad",
+          "admin1": "Ömnögovi",
+          "country": "Mongolia",
+          "countryCode": "MN",
+          "lat": 43.57,
+          "lon": 104.43,
+          "timezone": "Asia/Ulaanbaatar",
+          "utcOffsetSeconds": 28800,
+          "elevation": 1470
+        },
+        "temperature": 15.3,
+        "condition": {
+          "code": 0,
+          "key": "clear",
+          "label": "Clear sky",
+          "isDay": true
+        },
+        "precipitationProbability": 0,
+        "temperatureMin": 3.7,
+        "temperatureMax": 17.1,
+        "pm10Grade": "bad"
+      },
+      {
+        "location": {
+          "id": "2029156",
+          "name": "Sainshand",
+          "admin1": "Dornogovi",
+          "country": "Mongolia",
+          "countryCode": "MN",
+          "lat": 44.89,
+          "lon": 110.14,
+          "timezone": "Asia/Ulaanbaatar",
+          "utcOffsetSeconds": 28800,
+          "elevation": 938
+        },
+        "temperature": 16,
+        "condition": {
+          "code": 0,
+          "key": "clear",
+          "label": "Clear sky",
+          "isDay": true
+        },
+        "precipitationProbability": 6,
+        "temperatureMin": 8,
+        "temperatureMax": 17.5
+      },
+      {
+        "location": {
+          "id": "2032615",
+          "name": "Arvaikheer",
+          "admin1": "Övörkhangai",
+          "country": "Mongolia",
+          "countryCode": "MN",
+          "lat": 46.26,
+          "lon": 102.78,
+          "timezone": "Asia/Ulaanbaatar",
+          "utcOffsetSeconds": 28800,
+          "elevation": 1913
+        },
+        "temperature": 9.4,
+        "condition": {
+          "code": 3,
+          "key": "cloudy",
+          "label": "Overcast",
+          "isDay": true
+        },
+        "precipitationProbability": 11,
+        "temperatureMin": -1.2,
+        "temperatureMax": 11.2,
+        "pm10Grade": "bad"
+      },
+      {
+        "location": {
+          "id": "2030474",
+          "name": "Uliastai",
+          "admin1": "Zavkhan",
+          "country": "Mongolia",
+          "countryCode": "MN",
+          "lat": 47.74,
+          "lon": 96.84,
+          "timezone": "Asia/Hovd",
+          "utcOffsetSeconds": 25200,
+          "elevation": 1760
+        },
+        "temperature": 5.5,
+        "condition": {
+          "code": 3,
+          "key": "cloudy",
+          "label": "Overcast",
+          "isDay": true
+        },
+        "precipitationProbability": 6,
+        "temperatureMin": -5.8,
+        "temperatureMax": 7,
+        "pm10Grade": "good"
+      },
+      {
+        "location": {
+          "id": "2032570",
+          "name": "Baruun-Urt",
+          "admin1": "Sükhbaatar",
+          "country": "Mongolia",
+          "countryCode": "MN",
+          "lat": 46.68,
+          "lon": 113.28,
+          "timezone": "Asia/Ulaanbaatar",
+          "utcOffsetSeconds": 28800,
+          "elevation": 981
+        },
+        "temperature": 13.2,
+        "condition": {
+          "code": 1,
+          "key": "mostly-clear",
+          "label": "Mainly clear",
+          "isDay": true
+        },
+        "precipitationProbability": 16,
+        "temperatureMin": 2.3,
+        "temperatureMax": 14.2,
+        "pm10Grade": "moderate"
+      },
+      {
+        "location": {
+          "id": "2028749",
+          "name": "Tsetserleg",
+          "admin1": "Arkhangai",
+          "country": "Mongolia",
+          "countryCode": "MN",
+          "lat": 47.47,
+          "lon": 101.45,
+          "timezone": "Asia/Ulaanbaatar",
+          "utcOffsetSeconds": 28800,
+          "elevation": 1691
+        },
+        "temperature": 7.6,
+        "condition": {
+          "code": 51,
+          "key": "drizzle",
+          "label": "Light drizzle",
+          "isDay": true
+        },
+        "precipitationProbability": 69,
+        "temperatureMin": -3.7,
+        "temperatureMax": 10.5,
+        "pm10Grade": "bad"
+      }
+    ]
+  },
+  "meta": {
+    "provider": "fixture",
+    "fetchedAt": "2026-10-01T06:00:00Z",
+    "stale": false,
+    "mock": true
+  }
+}
